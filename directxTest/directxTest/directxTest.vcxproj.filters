@@ -236,5 +236,8 @@
     <ClInclude Include="..\..\..\Common\SearchFile\SearchFile.h">
       <Filter>Common\SearchFile</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\ShaderCG\ShaderWaveCom.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\ShaderCG</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

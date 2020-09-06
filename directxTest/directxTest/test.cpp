@@ -111,9 +111,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	DxText::InstanceCreate();
 	DxText* text = DxText::GetInstance();
 	MeshData* md = new MeshData();
-	PolygonData pd[5];
+	PolygonData pd[4];
 	SkinMesh* sk = new SkinMesh();
 	SkinMesh* sk1 = new SkinMesh();
+	Wave wav;
+
+	wav.SetCommandList(0);
+	wav.GetVBarray();
+	wav.SetVertex(ver24aa, 24, &index36[30], 6);
 
 	md->SetCommandList(0);
 	md->SetState(TRUE, TRUE, false);
@@ -138,31 +143,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	pd[1].GetVBarray(SQUARE);
 	pd[2].GetVBarray(SQUARE);
 	pd[3].GetVBarray(SQUARE);
-	pd[4].GetVBarray(SQUARE);
-	Vertex wa[4] = {
-		//左前
-		-50.0f, 0.0f, 100.0f,
-		0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f,
-		//右前
-		50.0f, 0.0f, 100.0f,
-		0.0f, 1.0f, 0.0f,
-		1.0f, 0.0f,
-		//左奥
-		-50.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f,
-		0.0f, 1.0f,
-		//右奥
-		50.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f,
-		1.0f, 1.0f
-	};
-	UINT ind[6] = { 0, 1, 2, 2, 1, 3 };
+
 	pd[0].setVertex(ver24aa, sizeof(ver24aa) / sizeof(Vertex), index36, sizeof(index36) / sizeof(UINT));
 	pd[1].setVertex(ver24aa, sizeof(ver24aa) / sizeof(Vertex), index36, sizeof(index36) / sizeof(UINT));
 	pd[2].setVertex(ver24aa, sizeof(ver24aa) / sizeof(Vertex), index36, sizeof(index36) / sizeof(UINT));
 	pd[3].setVertex(ver24aa, sizeof(ver24aa) / sizeof(Vertex), index36, sizeof(index36) / sizeof(UINT));
-	pd[4].setVertex(ver24aa, sizeof(ver24aa) / sizeof(Vertex), index36, sizeof(index36) / sizeof(UINT));
 
 	dx->Bigin(0);
 	DivideArr arr[3];
@@ -186,41 +171,42 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	sk->setInternalAnimationIndex(0);
 	sk1->CreateFromFBX();
 	sk1->setInternalAnimationIndex(0);
+	wav.Create(dx->GetTexNumber("wave.jpg"), -1, TRUE, TRUE, 0.05f, 64.0f);
 	//dx->wireFrameTest(true);
-	
+
 	pd[0].setDivideArr(arr, 3);
-	
+
 	pd[0].Create(true, dx->GetTexNumber("wall1.jpg"),
 		dx->GetTexNumber("wall1Nor.png"),
 		dx->GetTexNumber("wall1.jpg"), true, true);
 	pd[1].Create(true, dx->GetTexNumber("ceiling5.jpg"), /*dx->GetTexNumber("ceiling5Nor.png")*/-1, -1, true, true);
-	pd[2].Create(true, dx->GetTexNumber("wave.jpg"), /*dx->GetTexNumber("waveNor.png")*/-1, -1, true, true);
-	pd[3].Create(true, dx->GetTexNumber("siro.png"), -1, -1, true, true);
-	pd[4].Create(true, dx->GetTexNumber("boss_magic.png"), -1, -1, true, true);
+	pd[2].Create(true, dx->GetTexNumber("siro.png"), -1, -1, true, true);
+	pd[3].Create(true, dx->GetTexNumber("boss_magic.png"), -1, -1, true, true);
 	dx->End(0);
 	dx->WaitFence();
 	int numMesh = sk->getNumMesh();
 	int numMesh1 = sk1->getNumMesh();
-	UINT numMT = 5 + numMesh + numMesh1;
-	MaterialType* type = new MaterialType[numMT + 1];
+	UINT numMT = 4 + numMesh + numMesh1;
+	MaterialType* type = new MaterialType[numMT + 2];
 
 	type[0] = METALLIC;
 	type[1] = METALLIC;
-	type[2] = METALLIC;
-	type[3] = EMISSIVE;
-	type[4] = METALLIC;
-	for (int i = 5; i < numMesh + 5; i++)type[i] = NONREFLECTION;
-	for (int i = 5 + numMesh; i < numMT; i++)type[i] = NONREFLECTION;
+	type[2] = EMISSIVE;
+	type[3] = METALLIC;
+	for (int i = 4; i < numMesh + 4; i++)type[i] = NONREFLECTION;
+	for (int i = 4 + numMesh; i < numMT; i++)type[i] = NONREFLECTION;
 	type[numMT] = NONREFLECTION;
-	ParameterDXR** pdx = new ParameterDXR * [numMT + 1];
-	for (int i = 0; i < 5; i++)
+	type[numMT + 1] = METALLIC;
+	ParameterDXR** pdx = new ParameterDXR * [numMT + 2];
+	for (int i = 0; i < 4; i++)
 		pdx[i] = pd[i].getParameter();
-	for (int i = 5; i < numMesh + 5; i++)
-		pdx[i] = sk->getParameter(i - 5);
-	for (int i = 5 + numMesh; i < numMT; i++)
-		pdx[i] = sk1->getParameter(i - (5 + numMesh));
+	for (int i = 4; i < numMesh + 4; i++)
+		pdx[i] = sk->getParameter(i - 4);
+	for (int i = 4 + numMesh; i < numMT; i++)
+		pdx[i] = sk1->getParameter(i - (4 + numMesh));
 	pdx[numMT] = md->getParameter();
-	dxr.initDXR(0, numMT + 1, pdx, type);
+	pdx[numMT + 1] = wav.getParameter();
+	dxr.initDXR(0, numMT + 2, pdx, type);
 	dx->SetDirectionLight(false);
 	dx->DirectionLight(0.0f, 0.4f, -1.0f, 0.1f, 0.1f, 0.1f);
 	float theta = 0;
@@ -261,8 +247,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 
 		dx->PointLightPosSet(0,
-			light1.x, light1.y, light1.z,
-			1, 1, 1, 1, true, 1000);
+			{ light1.x, light1.y, light1.z },
+			{ 1, 1, 1, 1 }, true, 1000);
 
 		camTheta = camTheta += ca;
 		if (camTheta > 360)camTheta = 0;
@@ -270,63 +256,63 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		VECTOR3 cam1 = { 0, -70, 15 };
 		MatrixRotationZ(&camThetaZ, camTheta);
 		VectorMatrixMultiply(&cam1, &camThetaZ);
-		dx->Cameraset(cam1.x, cam1.y, cam1.z, 0, 0, 0);
-		
-		pd[0].InstancedMap(35, 0, 0,
-			0, 0, thetaO,
-			7, 7, 7);
-		
-		pd[0].InstanceUpdate(0, 0, 0, 0,
+		dx->Cameraset({ cam1.x, cam1.y, cam1.z }, { 0, 0, 0 });
+
+		pd[0].Instancing({ 35, 0, 0 },
+			{ 0, 0, thetaO },
+			{ 7, 7, 7 });
+
+		pd[0].InstancingUpdate({ 0, 0, 0, 0 },
 			1,
 			4.0f);
 
-		pd[1].InstancedMap(-35, 0, 0,
-			0, 0, thetaO,
-			7, 7, 7);
-		
-		pd[1].InstanceUpdate(0, 0, 0, 0,
+		pd[1].Instancing({ -35, 0, 0 },
+			{ 0, 0, thetaO },
+			{ 7, 7, 7 });
+
+		pd[1].InstancingUpdate({ 0, 0, 0, 0 },
 			0,
 			4.0f);
 
-		pd[2].InstancedMap(0, 0, -25,
-			0, 0, 0,
-			60, 60, 15);
-		pd[2].InstanceUpdate(0, 0, 0, 0,
+		pd[2].Instancing({ light1.x, light1.y, light1.z },
+			{ 0, 0, 0 },
+			{ 1, 1, 1 });
+		pd[2].InstancingUpdate({ 0, 0, 0, 0 },
 			0,
 			4.0f);
 
-		pd[3].InstancedMap(light1.x, light1.y, light1.z,
-			0, 0, 0,
-			1, 1, 1);
-		pd[3].InstanceUpdate(0, 0, 0, 0,
+		pd[3].Instancing({ 0, 0, 15 },
+			{ 0, 0, thetaO },
+			{ 4, 4, 4 });
+		pd[3].InstancingUpdate({ 0, 0, 0, 0 },
 			0,
 			4.0f);
-
-		pd[4].InstancedMap(0, 0, 15,
-			0, 0, thetaO,
-			4, 4, 4);
-		pd[4].InstanceUpdate(0, 0, 0, 0,
-			0,
-			4.0f);
-
 
 		float m = tfloat.Add(2.0f);
 
-		sk->Update(0,m,
-			15, 0, 0,
-			0, 0, 0, 0,
-			0, 0, 0,
-			1.2f);
-		sk1->Update(m,
-			-15, 0, 0,
-			0, 0, 0, 0,
-			0, 0, 0,
-			1.2f);
+		sk->Update(0, m,
+			{ 15, 0, 0 },
+			{ 0, 0, 0, 0 },
+			{ 0, 0, 0 },
+			{ 1.2f,1.2f,1.2f });
+		sk1->Update(0, m,
+			{ -15, 0, 0 },
+			{ 0, 0, 0, 0 },
+			{ 0, 0, 0 },
+			{ 1.2f,1.2f,1.2f });
 
-		md->Update(0, 0, -10,
-			0, 0, 0, 0,
-			0, 0, 0,
-			1, 1);
+		md->Update({ 0, 0, -10 },
+			{ 0, 0, 0, 0 },
+			{ 0, 0, 0 },
+			{ 1,1,1 },
+			1);
+
+		float m2 = tfloat.Add(0.006f);
+		wav.Instancing(m2, { 0, 0, -25 },
+			{ 0,0,0 },
+			{ 60, 60, 15 });
+		wav.InstancingUpdate({ 0, 0, 0, 0 },
+			0.1f, 4.0f);
 
 		if (!rayF) {
 			dx->Bigin(0);
@@ -337,8 +323,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			pd[1].Draw();
 			pd[2].Draw();
 			pd[3].Draw();
-			pd[4].Draw();
 			md->Draw();
+			wav.Draw();
 			dx->EndDraw(0);
 			dx->End(0);
 			dx->WaitFence();
@@ -350,9 +336,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			pd[1].StreamOutput();
 			pd[2].StreamOutput();
 			pd[3].StreamOutput();
-			pd[4].StreamOutput();
 			md->StreamOutput();
-
+			wav.StreamOutput();
 			dx->Bigin(0);
 			dxr.raytrace(0);
 			dx->End(0);
