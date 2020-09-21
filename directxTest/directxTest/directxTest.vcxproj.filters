@@ -49,6 +49,9 @@
     <Filter Include="Common\SearchFile">
       <UniqueIdentifier>{e32685ec-caab-4cdd-a36a-8ea9b3a5e0ab}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Common\DirectShowWrapper">
+      <UniqueIdentifier>{201d2078-218a-48c0-a83d-06b5a801116c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\FbxLoader\FbxLoader.cpp">
@@ -113,6 +116,18 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Common\SearchFile\SearchFile.cpp">
       <Filter>Common\SearchFile</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Common\DirectShowWrapper\Camera.cpp">
+      <Filter>Common\DirectShowWrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Common\DirectShowWrapper\DsProcess_DsProcess.cpp">
+      <Filter>Common\DirectShowWrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Common\DirectShowWrapper\Movie_GetFrame.cpp">
+      <Filter>Common\DirectShowWrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Common\DirectShowWrapper\Sound__sound.cpp">
+      <Filter>Common\DirectShowWrapper</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -238,6 +253,18 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\ShaderCG\ShaderWaveCom.h">
       <Filter>Common\Direct3DWrapper\DX_3DCG\ShaderCG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\DirectShowWrapper\Camera.h">
+      <Filter>Common\DirectShowWrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\DirectShowWrapper\DsProcess.h">
+      <Filter>Common\DirectShowWrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\DirectShowWrapper\Movie.h">
+      <Filter>Common\DirectShowWrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\DirectShowWrapper\Sound_.h">
+      <Filter>Common\DirectShowWrapper</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

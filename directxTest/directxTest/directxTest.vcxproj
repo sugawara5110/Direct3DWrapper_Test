@@ -101,7 +101,7 @@
       <ConformanceMode>false</ConformanceMode>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <Optimization>Custom</Optimization>
-      <AdditionalIncludeDirectories>D:\Info_tech_eng\FE\VS Express 2013 for Desktop\VC_Projects\C++\Common\Direct3DWrapper\MicroSoftLibrary;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Info_tech_eng\FE\VS Express 2013 for Desktop\カメラライブラリ;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -133,6 +133,7 @@
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>D:\Info_tech_eng\FE\VS Express 2013 for Desktop\カメラライブラリ;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -154,6 +155,10 @@
     <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Dx_PostEffect.cpp" />
     <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Dx_SkinMesh.cpp" />
     <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Dx_Wave.cpp" />
+    <ClCompile Include="..\..\..\Common\DirectShowWrapper\Camera.cpp" />
+    <ClCompile Include="..\..\..\Common\DirectShowWrapper\DsProcess_DsProcess.cpp" />
+    <ClCompile Include="..\..\..\Common\DirectShowWrapper\Movie_GetFrame.cpp" />
+    <ClCompile Include="..\..\..\Common\DirectShowWrapper\Sound__sound.cpp" />
     <ClCompile Include="..\..\..\Common\SearchFile\SearchFile.cpp" />
     <ClCompile Include="..\..\..\Common\Window\Control_Direction.cpp" />
     <ClCompile Include="..\..\..\Common\Window\Win.cpp" />
@@ -197,6 +202,10 @@
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\ShaderDXR\ShaderCommonDXR.h" />
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\ShaderDXR\ShaderParametersDXR.h" />
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\MicroSoftLibrary\d3dx12.h" />
+    <ClInclude Include="..\..\..\Common\DirectShowWrapper\Camera.h" />
+    <ClInclude Include="..\..\..\Common\DirectShowWrapper\DsProcess.h" />
+    <ClInclude Include="..\..\..\Common\DirectShowWrapper\Movie.h" />
+    <ClInclude Include="..\..\..\Common\DirectShowWrapper\Sound_.h" />
     <ClInclude Include="..\..\..\Common\SearchFile\SearchFile.h" />
     <ClInclude Include="..\..\..\Common\Window\Control.h" />
     <ClInclude Include="..\..\..\Common\Window\Win.h" />

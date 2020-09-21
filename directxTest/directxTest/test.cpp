@@ -5,6 +5,7 @@
 #include"../../../JPGLoader/JPGLoader.h"
 #include"../../../PNGLoader/PNGLoader.h"
 #include"../../../Common/SearchFile/SearchFile.h"
+#include"../../../Common/DirectShowWrapper/Movie.h"
 #pragma comment(lib,"winmm.lib")
 #define CURRWIDTH 1024
 #define CURRHEIGHT 768
@@ -80,7 +81,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	DXR_Basic dxr;
 	dx->dxrCreateResource();
 	dx->Initialize(hWnd, CURRWIDTH, CURRHEIGHT);
-	dx->setGlobalAmbientLight(0.5f, 0.5f, 0.5f);
+	dx->setGlobalAmbientLight(0.1f, 0.1f, 0.1f);
 
 	SearchFile* sf = new SearchFile(1);
 	char** strE = new char* [2];
@@ -110,15 +111,30 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//文字入力
 	DxText::InstanceCreate();
 	DxText* text = DxText::GetInstance();
-	MeshData* md = new MeshData();
-	PolygonData pd[4];
+	const int numPolygon = 4;
+	PolygonData pd[numPolygon];
 	SkinMesh* sk = new SkinMesh();
 	SkinMesh* sk1 = new SkinMesh();
+	MeshData* md = new MeshData();
 	Wave wav;
+	ParticleData* p = new ParticleData();
+	ParticleData* bil = new ParticleData();
+	PolygonData gr;
+	Movie* mov = new Movie("tex/torch1.avi");
+	PostEffect blur, mosa;
+
+	p->GetBufferParticle(dx->GetTexNumber("boss_magic.png"), 0.1f, 5.0f);
+	bil->GetBufferBill(2);
+	bil->SetVertex(0, { 14,0,13 }, { 0,0,0 });
+	bil->SetVertex(1, { -14,0,13 }, { 0,0,0 });
+	bil->TextureInit(256, 256);
 
 	wav.SetCommandList(0);
 	wav.GetVBarray();
 	wav.SetVertex(ver24aa, 24, &index36[30], 6);
+
+	gr.GetVBarray(CONTROL_POINT);
+	gr.setVertex(ver24aa, 24, &index36[30], 6);
 
 	md->SetCommandList(0);
 	md->SetState(TRUE, TRUE, false);
@@ -150,6 +166,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	pd[3].setVertex(ver24aa, sizeof(ver24aa) / sizeof(Vertex), index36, sizeof(index36) / sizeof(UINT));
 
 	dx->Bigin(0);
+	blur.ComCreateBlur();
+	mosa.ComCreateMosaic();
+	p->CreateParticle(dx->GetTexNumber("leaf.png"));
+	bil->CreateBillboard();
 	DivideArr arr[3];
 	arr[0].distance = 90.0f;
 	arr[0].divide = 2;//頂点数 3 → 3 * 6 = 18
@@ -158,21 +178,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	arr[2].distance = 36.0f;
 	arr[2].divide = 96;//頂点数 3 → 3 * 13824 = 41472
 	DivideArr arrsk[3];
-	arr[0].distance = 90.0f;
-	arr[0].divide = 2;//頂点数 3 → 3 * 6 = 18
-	arr[1].distance = 50.0f;
-	arr[1].divide = 6;
-	arr[2].distance = 36.0f;
-	arr[2].divide = 12;
+	arrsk[0].distance = 90.0f;
+	arrsk[0].divide = 2;//頂点数 3 → 3 * 6 = 18
+	arrsk[1].distance = 50.0f;
+	arrsk[1].divide = 6;
+	arrsk[2].distance = 36.0f;
+	arrsk[2].divide = 12;
 	md->setDivideArr(arrsk, 3);
 	sk->setDivideArr(arrsk, 3);
+	//dx->wireFrameTest(true);
 	md->CreateMesh();
 	sk->CreateFromFBX();
 	sk->setInternalAnimationIndex(0);
 	sk1->CreateFromFBX();
 	sk1->setInternalAnimationIndex(0);
 	wav.Create(dx->GetTexNumber("wave.jpg"), -1, TRUE, TRUE, 0.05f, 64.0f);
-	//dx->wireFrameTest(true);
+
+	gr.setDivideArr(arr, 3);
+	gr.Create(true, dx->GetTexNumber("ground3.jpg"),
+		dx->GetTexNumber("ground3Nor.png"),
+		dx->GetTexNumber("ground3.jpg"), true, true);
 
 	pd[0].setDivideArr(arr, 3);
 
@@ -186,27 +211,34 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	dx->WaitFence();
 	int numMesh = sk->getNumMesh();
 	int numMesh1 = sk1->getNumMesh();
-	UINT numMT = 4 + numMesh + numMesh1;
-	MaterialType* type = new MaterialType[numMT + 2];
+	UINT numMT = numPolygon + numMesh + numMesh1 + 6;
+	MaterialType* type = new MaterialType[numMT];
 
 	type[0] = METALLIC;
 	type[1] = METALLIC;
 	type[2] = EMISSIVE;
 	type[3] = METALLIC;
-	for (int i = 4; i < numMesh + 4; i++)type[i] = NONREFLECTION;
-	for (int i = 4 + numMesh; i < numMT; i++)type[i] = NONREFLECTION;
-	type[numMT] = NONREFLECTION;
-	type[numMT + 1] = METALLIC;
-	ParameterDXR** pdx = new ParameterDXR * [numMT + 2];
-	for (int i = 0; i < 4; i++)
+	for (int i = numPolygon; i < numMesh + numPolygon; i++)type[i] = NONREFLECTION;
+	for (int i = numMesh + numPolygon; i < numMesh + numPolygon + numMesh1; i++)type[i] = NONREFLECTION;
+	type[numMesh + numPolygon + numMesh1] = NONREFLECTION;
+	type[numMesh + numPolygon + numMesh1 + 1] = NONREFLECTION;
+	type[numMesh + numPolygon + numMesh1 + 2] = METALLIC;
+	type[numMesh + numPolygon + numMesh1 + 3] = EMISSIVE;
+	type[numMesh + numPolygon + numMesh1 + 4] = EMISSIVE;
+	type[numMesh + numPolygon + numMesh1 + 5] = NONREFLECTION;
+	ParameterDXR** pdx = new ParameterDXR * [numMT - 1];
+	for (int i = 0; i < numPolygon; i++)
 		pdx[i] = pd[i].getParameter();
-	for (int i = 4; i < numMesh + 4; i++)
-		pdx[i] = sk->getParameter(i - 4);
-	for (int i = 4 + numMesh; i < numMT; i++)
-		pdx[i] = sk1->getParameter(i - (4 + numMesh));
-	pdx[numMT] = md->getParameter();
-	pdx[numMT + 1] = wav.getParameter();
-	dxr.initDXR(0, numMT + 2, pdx, type);
+	for (int i = numPolygon; i < numMesh + numPolygon; i++)
+		pdx[i] = sk->getParameter(i - numPolygon);
+	for (int i = numMesh + numPolygon; i < numMesh + numPolygon + numMesh1; i++)
+		pdx[i] = sk1->getParameter(i - (numMesh + numPolygon));
+	pdx[numMesh + numPolygon + numMesh1] = md->getParameter();
+	pdx[numMesh + numPolygon + numMesh1 + 1] = wav.getParameter();
+	pdx[numMesh + numPolygon + numMesh1 + 2] = bil->getParameter();
+	pdx[numMesh + numPolygon + numMesh1 + 3] = p->getParameter();
+	pdx[numMesh + numPolygon + numMesh1 + 4] = gr.getParameter();
+	dxr.initDXR(0, numMT - 1, pdx, type, 5);
 	dx->SetDirectionLight(false);
 	dx->DirectionLight(0.0f, 0.4f, -1.0f, 0.1f, 0.1f, 0.1f);
 	float theta = 0;
@@ -214,8 +246,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	float camTheta = 0;
 	int insCnt = 0;
 	bool rayF = false;
+	bool eff[2];
+	eff[0] = false;
+	eff[1] = false;
 	T_float tfloat;
-
+	int parCnt = 0;
+	bool parSwich = false;
 	while (1) {
 		if (!DispatchMSG(&msg)) {
 			break;
@@ -225,17 +261,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		Directionkey key = con->Direction();
 		if (key == LEFT)rayF = !rayF;
+		if (key == UP)eff[0] = !eff[0];
+		if (key == DOWN)eff[1] = !eff[1];
 
-		float th = tfloat.Add(0.5f);
+		float th = tfloat.Add(0.2f);
 		float th1 = tfloat.Add(0.1f);
 		float ca = tfloat.Add(0.1f);
-
 		theta = theta += th;
 		if (theta > 360)theta = 0;
 		thetaO = thetaO += th1;
 		if (thetaO > 360)thetaO = 0;
 		MATRIX thetaZ;
-		VECTOR3 light1 = { 0, -40, 1 };
+		VECTOR3 light1 = { 0, -40, 15 };
 		VECTOR3 light2 = { 0,50,-30 };
 		MatrixRotationZ(&thetaZ, theta);
 		VectorMatrixMultiply(&light1, &thetaZ);
@@ -253,7 +290,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		camTheta = camTheta += ca;
 		if (camTheta > 360)camTheta = 0;
 		MATRIX camThetaZ;
-		VECTOR3 cam1 = { 0, -70, 15 };
+		VECTOR3 cam1 = { 0, -70, 20 };
 		MatrixRotationZ(&camThetaZ, camTheta);
 		VectorMatrixMultiply(&cam1, &camThetaZ);
 		dx->Cameraset({ cam1.x, cam1.y, cam1.z }, { 0, 0, 0 });
@@ -292,7 +329,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		sk->Update(0, m,
 			{ 15, 0, 0 },
-			{ 0, 0, 0, 0 },
+			{ 0, 0, 0, -0.3f },
 			{ 0, 0, 0 },
 			{ 1.2f,1.2f,1.2f });
 		sk1->Update(0, m,
@@ -311,20 +348,55 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		wav.Instancing(m2, { 0, 0, -25 },
 			{ 0,0,0 },
 			{ 60, 60, 15 });
-		wav.InstancingUpdate({ 0, 0, 0, 0 },
-			0.1f, 4.0f);
+		wav.InstancingUpdate({ 0, 0, 0, -0.4f },
+			0.001f, 4.0f);
+
+		gr.Instancing({ 0, 0, -28 },
+			{ 0, 0, 0 },
+			{ 60, 60, 15 });
+
+		gr.InstancingUpdate({ 0, 0, 0, 0 },
+			0.01f,
+			1.0f);
+
+		float pp = tfloat.Add(0.1f);
+		parCnt += pp;
+		if (parCnt > 50) {
+			parCnt = 0; parSwich = true;
+		}
+		p->Update({ 0,0,10 }, { 0,0,0 }, 0, 0.1f, parSwich, 0.1f);
+		parSwich = false;
+		bil->Update(10.0f, { 0,0,0,-0.3f });
+		if (!rayF)
+			text->UpDateText(L"レイトレオフ", 185.0f, 30.0f, 30.0f, { 1.0f, 1.0f, 1.0f, 1.0f });
+		else
+			text->UpDateText(L"レイトレオン", 185.0f, 30.0f, 30.0f, { 1.0f, 1.0f, 1.0f, 1.0f });
+		if (!eff[1])
+			text->UpDateText(L"モザイクオフ", 185.0f, 60.0f, 30.0f, { 1.0f, 1.0f, 1.0f, 1.0f });
+		else
+			text->UpDateText(L"モザイクオン", 185.0f, 60.0f, 30.0f, { 1.0f, 1.0f, 1.0f, 1.0f });
+		text->UpDate();
 
 		if (!rayF) {
 			dx->Bigin(0);
 			dx->BiginDraw(0);
-			sk->Draw();
+			p->Draw();
 			sk1->Draw();
 			pd[0].Draw();
 			pd[1].Draw();
 			pd[2].Draw();
 			pd[3].Draw();
 			md->Draw();
+			gr.Draw();
 			wav.Draw();
+			sk->Draw();
+			bil->SetTextureMPixel(mov->GetFrame(256, 256, 50));
+			bil->DrawBillboard();
+			if (eff[0])blur.ComputeBlur(true, 400, 300, 200);
+			else blur.ComputeBlur(false, 400, 300, 200);
+			if (eff[1])mosa.ComputeMosaic(true, 10);
+			else mosa.ComputeMosaic(false, 10);
+			text->Draw(0);
 			dx->EndDraw(0);
 			dx->End(0);
 			dx->WaitFence();
@@ -337,9 +409,27 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			pd[2].StreamOutput();
 			pd[3].StreamOutput();
 			md->StreamOutput();
+			gr.StreamOutput();
 			wav.StreamOutput();
+			p->StreamOutput();
 			dx->Bigin(0);
-			dxr.raytrace(0);
+			bil->SetTextureMPixel(mov->GetFrame(256, 256, 50));
+			dx->End(0);
+			dx->WaitFence();
+			bil->StreamOutputBillboard();
+			dx->Bigin(0);
+			dxr.raytrace(0, 4);
+			dx->End(0);
+			dx->WaitFence();
+
+			dx->Bigin(0);
+			dx->BiginDraw(0, false);
+			if (eff[0])blur.ComputeBlur(true, 400, 300, 200);
+			else blur.ComputeBlur(false, 400, 300, 200);
+			if (eff[1])mosa.ComputeMosaic(true, 10);
+			else mosa.ComputeMosaic(false, 10);
+			text->Draw(0);
+			dx->EndDraw(0);
 			dx->End(0);
 			dx->WaitFence();
 		}
@@ -352,6 +442,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	S_DELETE(sk1);
 	S_DELETE(sf);
 	S_DELETE(md);
+	S_DELETE(p);
+	S_DELETE(bil);
 	Control::DeleteInstance();
 	DxText::DeleteInstance();
 	Dx12Process::DeleteInstance();
