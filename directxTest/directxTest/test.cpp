@@ -8,6 +8,7 @@
 #include"../../../PNGLoader/PNGLoader.h"
 #include"../../../Common/SearchFile/SearchFile.h"
 #include"../../../Common/DirectShowWrapper/Movie.h"
+#include"../../../MultiThread/MultiThread.h"
 #pragma comment(lib,"winmm.lib")
 #include <Process.h>
 #define CURRWIDTH 1024
@@ -126,11 +127,10 @@ static UINT index36Rev[] =
 	20,23,22
 };
 
-unsigned __stdcall upDateThread(void*);
-unsigned __stdcall rayDateThread(void*);
 void update();
-void draw(int com);
-void raytrace(int com);
+void draw();
+void AS();
+void raytrace();
 const int numPolygon = 4;
 float theta = 0;
 float thetaO = 0;
@@ -162,28 +162,7 @@ Movie* mov;
 PostEffect* blur, * mosa;
 PolygonData* soto;
 Control* con;
-HANDLE* update_h[2];
-HANDLE eventBigin[2] = {};
-HANDLE eventEnd[2] = {};
-int sync[2] = {};
-
-volatile bool UpDateThreadLoop[2] = { true,true };
-
-void CreateThreadUpdate() {
-	update_h[0] = (HANDLE*)_beginthreadex(NULL, 0, upDateThread, NULL, 0, NULL);
-	update_h[1] = (HANDLE*)_beginthreadex(NULL, 0, rayDateThread, NULL, 0, NULL);
-}
-
-void DeleteThreadUpdate() {
-	UpDateThreadLoop[0] = FALSE;
-	UpDateThreadLoop[1] = FALSE;
-	SetEvent(eventBigin[0]);
-	WaitForSingleObject(eventEnd[1], INFINITE);
-	CloseHandle(update_h[0]);
-	update_h[0] = NULL;
-	CloseHandle(update_h[1]);
-	update_h[1] = NULL;
-}
+int sync[3] = {};
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 
@@ -200,29 +179,38 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	dx->Initialize(hWnd, CURRWIDTH, CURRHEIGHT);
 	dx->setGlobalAmbientLight(0.0f, 0.0f, 0.0f);
 
-	SearchFile* sf = new SearchFile(1);
+	SearchFile* sf = new SearchFile(2);
 	char** strE = new char* [2];
 	strE[0] = "jpg";
 	strE[1] = "png";
 	sf->Search(L"./tex/*", 0, strE, 2);
+	sf->Search(L"../../../Black Dragon NEW/textures/*", 1, strE, 2);
+	UINT numFile1 = sf->GetFileNum(0);
+	UINT numFile2 = sf->GetFileNum(1);
 	JPGLoader jpg;
 	PNGLoader png;
+	UINT resCnt = 0;
 	ARR_DELETE(strE);
-	for (int i = 0; i < sf->GetFileNum(0); i++) {
-		char* str = sf->GetFileName(0, i);
-		UCHAR* byte = jpg.loadJPG(str, 0, 0, nullptr);
-		unsigned int w = jpg.getSrcWidth();
-		unsigned int h = jpg.getSrcHeight();
-		if (byte == nullptr) {
-			byte = png.loadPNG(str, 0, 0, nullptr);
-			w = png.getSrcWidth();
-			h = png.getSrcHeight();
-		}
+	for (int k = 0; k < 2; k++) {
+		for (int i = 0; i < sf->GetFileNum(k); i++) {
+			char* str = sf->GetFileName(k, i);
+			UCHAR* byte = jpg.loadJPG(str, 0, 0, nullptr);
+			unsigned int w = jpg.getSrcWidth();
+			unsigned int h = jpg.getSrcHeight();
+			if (byte == nullptr) {
+				byte = png.loadPNG(str, 0, 0, nullptr);
+				w = png.getSrcWidth();
+				h = png.getSrcHeight();
+			}
 
-		dx->createTextureArr(sf->GetFileNum(0), i, dx->GetNameFromPass(str),
-			byte, DXGI_FORMAT_R8G8B8A8_UNORM,
-			w, w * 4, h);
-		ARR_DELETE(byte);
+			dx->createTextureArr(numFile1 + numFile2, resCnt++, dx->GetNameFromPass(str),
+				byte, DXGI_FORMAT_R8G8B8A8_UNORM,
+				w, w * 4, h);
+			if (w < 10 || h < 10) {
+				int b = 0;
+			}
+			ARR_DELETE(byte);
+		}
 	}
 
 	//文字入力
@@ -232,7 +220,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	sk = new SkinMesh();
 	sk1 = new SkinMesh();
 	md = new MeshData();
-    p = new ParticleData();
+	p = new ParticleData();
 	bil = new ParticleData();
 	mov = new Movie("tex/torch1.avi");
 	wav = new Wave();
@@ -241,28 +229,50 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	soto = new PolygonData();
 	gr = new PolygonData();
 
+	DivideArr arr[3];
+	arr[0].distance = 90.0f;
+	arr[0].divide = 2;//頂点数 3 → 3 * 6 = 18
+	arr[1].distance = 50.0f;
+	arr[1].divide = 48;//頂点数 3 → 3 * 3456 = 10368
+	arr[2].distance = 36.0f;
+	arr[2].divide = 96;//頂点数 3 → 3 * 13824 = 41472
+
+	DivideArr arrsk[3];
+	arrsk[0].distance = 90.0f;
+	arrsk[0].divide = 2;//頂点数 3 → 3 * 6 = 18
+	arrsk[1].distance = 50.0f;
+	arrsk[1].divide = 6;
+	arrsk[2].distance = 36.0f;
+	arrsk[2].divide = 12;
+
+	md->setDivideArr(arrsk, 3);
+	sk1->setDivideArr(arrsk, 3);
+	gr->setDivideArr(arr, 3);
+	pd[0].setDivideArr(arr, 3);
+
 	p->GetBufferParticle(dx->GetTexNumber("boss_magic.png"), 0.1f, 5.0f);
 	bil->GetBufferBill(2);
-	bil->SetVertex(0, { 7,0,7 }, { 0,0,0 });
-	bil->SetVertex(1, { -50,0,18 }, { 0,0,0 });
+	bil->SetVertex(0, { 0,50,7 }, { 0,0,0 });
+	bil->SetVertex(1, { 0,-50,18 }, { 0,0,0 });
 	bil->TextureInit(256, 256);
 
 	wav->SetCommandList(0);
-	wav->GetVBarray();
+	wav->GetVBarray(1);
 	wav->SetVertex(ver24aa, 24, &index36[30], 6);
 
-	gr->GetVBarray(CONTROL_POINT);
+	gr->GetVBarray(CONTROL_POINT, 1);
 	gr->setVertex(ver24aa, 24, &index36[30], 6);
 
 	md->SetCommandList(0);
 	md->SetState(TRUE, TRUE, false);
-	md->GetBuffer("mesh/tree.obj");
+	md->GetBuffer("mesh/tree.obj", 2);
 	md->SetVertex();
 
 	sk->SetCommandList(0);
 	sk->SetState(true, true);
 	sk->ObjOffset(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0);
 	sk->GetFbx("mesh/player2_fbx_att.fbx");
+	//HRESULT hr = sk->GetFbx("../../../Black Dragon NEW/Dragon_Baked_Actions_fbx_7.4_binary.fbx");
 	sk->GetBuffer(3200.0f);
 	sk->SetVertex();
 
@@ -273,17 +283,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	sk1->GetBuffer(2900.0f);
 	sk1->SetVertex();
 
-	pd[0].GetVBarray(SQUARE);
-	pd[1].GetVBarray(SQUARE);
-	pd[2].GetVBarray(SQUARE);
-	pd[3].GetVBarray(SQUARE);
+	pd[0].GetVBarray(CONTROL_POINT, 2);
+	pd[1].GetVBarray(SQUARE, 2);
+	pd[2].GetVBarray(SQUARE, 1);
+	pd[3].GetVBarray(SQUARE, 1);
 
 	pd[0].setVertex(ver24aa, sizeof(ver24aa) / sizeof(Vertex), index36, sizeof(index36) / sizeof(UINT));
 	pd[1].setVertex(ver24aa, sizeof(ver24aa) / sizeof(Vertex), index36, sizeof(index36) / sizeof(UINT));
 	pd[2].setVertex(ver24aa, sizeof(ver24aa) / sizeof(Vertex), index36, sizeof(index36) / sizeof(UINT));
 	pd[3].setVertex(ver24aa, sizeof(ver24aa) / sizeof(Vertex), index36, sizeof(index36) / sizeof(UINT));
 
-	soto->GetVBarray(SQUARE);
+	soto->GetVBarray(SQUARE, 1);
 	soto->setVertex(ver24aaRev, sizeof(ver24aaRev) / sizeof(Vertex), index36Rev, sizeof(index36Rev) / sizeof(UINT));
 
 	dx->Bigin(0);
@@ -291,36 +301,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	mosa->ComCreateMosaic();
 	p->CreateParticle(dx->GetTexNumber("leaf.png"));
 	bil->CreateBillboard();
-	DivideArr arr[3];
-	arr[0].distance = 90.0f;
-	arr[0].divide = 2;//頂点数 3 → 3 * 6 = 18
-	arr[1].distance = 50.0f;
-	arr[1].divide = 48;//頂点数 3 → 3 * 3456 = 10368
-	arr[2].distance = 36.0f;
-	arr[2].divide = 96;//頂点数 3 → 3 * 13824 = 41472
-	DivideArr arrsk[3];
-	arrsk[0].distance = 90.0f;
-	arrsk[0].divide = 2;//頂点数 3 → 3 * 6 = 18
-	arrsk[1].distance = 50.0f;
-	arrsk[1].divide = 6;
-	arrsk[2].distance = 36.0f;
-	arrsk[2].divide = 12;
-	md->setDivideArr(arrsk, 3);
-	sk->setDivideArr(arrsk, 3);
 	//dx->wireFrameTest(true);
 	md->CreateMesh();
-	sk->CreateFromFBX();
-	sk->setInternalAnimationIndex(0);
 	sk1->CreateFromFBX();
+	bool a = sk->CreateFromFBX();
+	sk->setInternalAnimationIndex(0);
+
 	sk1->setInternalAnimationIndex(0);
 	wav->Create(dx->GetTexNumber("wave.jpg"), -1, TRUE, TRUE, 0.04f, 64.0f);
 
-	gr->setDivideArr(arr, 3);
 	gr->Create(true, dx->GetTexNumber("ground3.jpg"),
 		dx->GetTexNumber("ground3Nor.png"),
 		dx->GetTexNumber("ground3.jpg"), true, true);
-
-	pd[0].setDivideArr(arr, 3);
 
 	pd[0].Create(true, dx->GetTexNumber("wall1.jpg"),
 		dx->GetTexNumber("wall1Nor.png"),
@@ -337,44 +329,56 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	dx->WaitFence();
 	int numMesh = sk->getNumMesh();
 	int numMesh1 = sk1->getNumMesh();
-	UINT numMT = numPolygon + numMesh + numMesh1 + 6 + 1;
-	MaterialType* type = new MaterialType[numMT];
+	int numMaterial = 0;
+	int numMaterial1 = 0;
+	UINT numMT = numPolygon + numMesh + numMesh1 + 6;
 
-	type[0] = NONREFLECTION;
-	type[1] = METALLIC;
-	type[2] = EMISSIVE;
-	type[3] = METALLIC;
-	for (int i = numPolygon; i < numMesh + numPolygon; i++)type[i] = NONREFLECTION;
-	for (int i = numMesh + numPolygon; i < numMesh + numPolygon + numMesh1; i++)type[i] = NONREFLECTION;
-	type[numMesh + numPolygon + numMesh1] = NONREFLECTION;
-	type[numMesh + numPolygon + numMesh1 + 1] = NONREFLECTION;
-	type[numMesh + numPolygon + numMesh1 + 2] = METALLIC;
-	type[numMesh + numPolygon + numMesh1 + 3] = EMISSIVE;
-	type[numMesh + numPolygon + numMesh1 + 4] = EMISSIVE;
-	type[numMesh + numPolygon + numMesh1 + 5] = NONREFLECTION;
-	type[numMesh + numPolygon + numMesh1 + 6] = DIRECTIONLIGHT_NONREFLECTION;
-	//type[numMesh + numPolygon + numMesh1 + 6] = NONREFLECTION;
-	ParameterDXR** pdx = new ParameterDXR * [numMT - 1];
+	ParameterDXR** pdx = new ParameterDXR * [numMT];
 	for (int i = 0; i < numPolygon; i++)
 		pdx[i] = pd[i].getParameter();
-	for (int i = numPolygon; i < numMesh + numPolygon; i++)
+	for (int i = numPolygon; i < numMesh + numPolygon; i++) {
 		pdx[i] = sk->getParameter(i - numPolygon);
-	for (int i = numMesh + numPolygon; i < numMesh + numPolygon + numMesh1; i++)
+		numMaterial += pdx[i]->NumMaterial;
+	}
+	for (int i = numMesh + numPolygon; i < numMesh + numPolygon + numMesh1; i++) {
 		pdx[i] = sk1->getParameter(i - (numMesh + numPolygon));
+		numMaterial1 += pdx[i]->NumMaterial;
+	}
 	pdx[numMesh + numPolygon + numMesh1] = md->getParameter();
 	pdx[numMesh + numPolygon + numMesh1 + 1] = wav->getParameter();
 	pdx[numMesh + numPolygon + numMesh1 + 2] = bil->getParameter();
 	pdx[numMesh + numPolygon + numMesh1 + 3] = p->getParameter();
 	pdx[numMesh + numPolygon + numMesh1 + 4] = gr->getParameter();
 	pdx[numMesh + numPolygon + numMesh1 + 5] = soto->getParameter();
-	dxr->initDXR(0, numMT-1, pdx, type, 3);
+
+	UINT numMT1 = numPolygon + numMaterial + numMaterial1 + 6 + 1;
+	MaterialType* type = new MaterialType[numMT1];
+
+	type[0] = NONREFLECTION;
+	type[1] = METALLIC;
+	type[2] = EMISSIVE;
+	type[3] = METALLIC;
+	for (int i = numPolygon; i < numMaterial + numPolygon; i++)type[i] = NONREFLECTION;
+	for (int i = numMaterial + numPolygon; i < numMaterial + numPolygon + numMaterial1; i++)type[i] = NONREFLECTION;
+	type[numMaterial + numPolygon + numMaterial1] = NONREFLECTION;
+	type[numMaterial + numPolygon + numMaterial1 + 1] = NONREFLECTION;
+	type[numMaterial + numPolygon + numMaterial1 + 2] = METALLIC;
+	type[numMaterial + numPolygon + numMaterial1 + 3] = EMISSIVE;
+	type[numMaterial + numPolygon + numMaterial1 + 4] = EMISSIVE;
+	type[numMaterial + numPolygon + numMaterial1 + 5] = NONREFLECTION;
+	type[numMaterial + numPolygon + numMaterial1 + 6] = DIRECTIONLIGHT_NONREFLECTION;
+	//type[numMaterial + numPolygon + numMaterial1 + 6] = NONREFLECTION;
+
+
+	dxr->initDXR(numMT, pdx, type, 3);
 	eff[0] = false;
 	eff[1] = false;
-	CreateThreadUpdate();
-	for (int i = 0; i < 2; i++) {
-		eventBigin[i] = CreateEvent(NULL, FALSE, FALSE, NULL);
-		eventEnd[i] = CreateEvent(NULL, FALSE, FALSE, NULL);
-	}
+	MultiThread th;
+	th.setFunc(update);
+	th.setFunc(draw);
+	th.setFunc(AS);
+	th.setFunc(raytrace);
+	th.start();
 	while (1) {
 		if (!DispatchMSG(&msg)) {
 			break;
@@ -385,7 +389,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		camTheta = camTheta += ca;
 		if (camTheta > 360)camTheta = 0;
 		MATRIX camThetaZ;
-		VECTOR3 cam1 = { 0, -70, 20 };
+		VECTOR3 cam1 = { 0, -70, 10 };
 		MatrixRotationZ(&camThetaZ, camTheta);
 		VectorMatrixMultiply(&cam1, &camThetaZ);
 		dx->Cameraset({ cam1.x, cam1.y, cam1.z }, { 0, 0, 0 });
@@ -395,24 +399,31 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		dx->End(0);
 		dx->WaitFence();
 
-		SetEvent(eventBigin[0]);
-		update();
-		WaitForSingleObject(eventEnd[1], INFINITE);
-
-		dx->DrawScreen();
 		sync[0] = 1 - sync[0];
 		sync[1] = 1 - sync[1];
+		sync[2] = 1 - sync[2];
 		dx->setUpSwapIndex(sync[0]);
 		dx->setDrawSwapIndex(1 - sync[0]);
 		dx->setStreamOutputSwapIndex(sync[1]);
 		dx->setRaytraceSwapIndex(1 - sync[1]);
-	}
+		dxr->setASswapIndex(sync[2]);
+		dxr->setRaytraceSwapIndex(1 - sync[2]);
 
-	DeleteThreadUpdate();
-	for (int i = 0; i < 2; i++) {
-		CloseHandle(eventBigin[i]);
-		CloseHandle(eventEnd[i]);
+		th.wait();
+
+		dx->Bigin(0);
+		dx->BiginDraw(0, false);
+		if (eff[0])blur->ComputeBlur(0, true, 400, 300, 200);
+		else blur->ComputeBlur(0, false, 400, 300, 200);
+		if (eff[1])mosa->ComputeMosaic(0, true, 10);
+		else mosa->ComputeMosaic(0, false, 10);
+		text->Draw(0);
+		dx->EndDraw(0);
+		dx->End(0);
+		dx->WaitFence();
+		dx->DrawScreen();
 	}
+	th.end();
 
 	ARR_DELETE(pd);
 	ARR_DELETE(type);
@@ -436,10 +447,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	return 0;
 }
 
+static bool d = true;
+
 void update() {
 	Directionkey key = con->Direction();
 	if (key == LEFT)rayF = !rayF;//レイトレ
-	if (key == UP)eff[0] = !eff[0];
+	if (key == UP)d = !d;
 	if (key == DOWN)eff[1] = !eff[1];//モザイク
 	if (key == ENTER)plight = !plight;//Ctrl
 	if (key == CANCEL)dlight = !dlight;//Delete
@@ -459,39 +472,45 @@ void update() {
 
 	dx->PointLightPosSet(0,
 		{ light1.x, light1.y, light1.z },
-		{ 1, 1, 1, 1 }, plight, 1000);
+		{ 1, 1, 1, 1 }, plight, 1000, { 0.01f,0.001f,0.001f });
 	dx->PointLightPosSet(1,
 		{ 14, 0, 5 },
-		{ 1, 1, 1, 1 }, plight2, 500, { 0.1f,0.01f,0.01f });
+		{ 1, 1, 1, 1 }, plight2, 1000, { 0.01f,0.001f,0.001f });
 	dx->PointLightPosSet(2,
 		{ -14, 0, 5 },
-		{ 1, 1, 1, 1 }, plight2, 500, { 1.1f ,0.01f,0.01f });
+		{ 1, 1, 1, 1 }, plight2, 1000, { 0.01f,0.001f,0.001f });
 	dx->PointLightPosSet(3,
 		{ 0, 0, 0 },
-		{ 1, 1, 1, 1 }, false, 10);
+		{ 1, 1, 1, 1 }, true, 10);
 
 	float th1 = tfloat.Add(0.05f);
-	
+
 	thetaO = thetaO += th1;
 	if (thetaO > 360)thetaO = 0;
-	
+
 	insCnt++;
-	if (insCnt > 600) {
+	if (insCnt > 1100) {
 		insCnt = 0;
 	}
 
-	pd[0].Instancing({ 35, 0, 0 },
-		{ 0, 0, 0 },
-		{ 7, 7, 7 });
+
+	for (int b = 0; b < 2; b++) {
+		if (insCnt > b * 100)
+			pd[0].Instancing({ (float)35 - (b * 10), 0, 20 },
+				{ 0, 0, 0 },
+				{ 7, 7, 7 });
+	}
 
 	pd[0].InstancingUpdate({ 0, 0, 0, 0 },
 		1,
 		4.0f);
 
-	pd[1].Instancing({ -35, 0, 0 },
-		{ 0, 0, 0 },
-		{ 7, 7, 7 });
-
+	for (int b = 0; b < 2; b++) {
+		if (insCnt > b * 100)
+			pd[1].Instancing({ (float)-35 + (b * 10), 0, 10 },
+				{ 0, 0, 0 },
+				{ 7, 7, 7 });
+	}
 	pd[1].InstancingUpdate({ 0, 0, 0, 0 },
 		0,
 		4.0f);
@@ -512,22 +531,35 @@ void update() {
 
 	float m = tfloat.Add(2.0f);
 
-	sk->Update(0, m,
-		{ 15, 0, 0 },
-		{ 0, 0, 0, 0 },
-		{ 0, 0, 0 },
-		{ 1.2f,1.2f,1.2f });
+	if (d) {
+		/*sk->Update(0, m,
+			{ 0, 0, 0 },
+			{ 0, 0, 0, 0 },
+			{ 90, 0, 0 },
+			{ 0.005f,0.005f,0.005f });*/
+
+		sk->Update(0, m,
+			{ 15, 0, 0 },
+			{ 0, 0, 0, 0 },
+			{ 0, 0, 0 },
+			{ 1.2f,1.2f,1.2f });
+	}
+	else sk->DrawOff();
+
 	sk1->Update(0, m,
 		{ -15, 0, 0 },
 		{ 0, 0, 0, 0 },
-		{ 0, 0, 0 },
+		{ 0, 0, theta },
 		{ 1.2f,1.2f,1.2f });
 
-	md->Update({ 0, 0, -10 },
-		{ 0, 0, 0, 0 },
+	md->Instancing({ 0, 0, -10 },
+		{ 0, 0, 0},
+		{ 1,1,1 });
+	md->Instancing({ 0, 0, 30 },
 		{ 0, 0, 0 },
-		{ 1,1,1 },
-		1);
+		{ 1,1,1 });
+	md->InstancingUpdate(
+		{ 0, 0, 0, 0 },0,4.0);
 
 	float m2 = tfloat.Add(0.003f);
 	wav->Instancing(m2, { 0, 0, -20 },
@@ -557,9 +589,15 @@ void update() {
 		parCnt = 0; parSwich = true;
 	}
 	float sp = tfloat.Add(0.03f);
-	p->Update({ 0,0,5 }, { 0,0,0 }, 0, 0.1f, parSwich, sp);
-	parSwich = false;
-	bil->Update(10.0f, { 0,0,0,-0.3f });
+	if (d) {
+		p->Update({ 0,0,5 }, { 0,0,0 }, 0, 0.1f, parSwich, sp);
+		parSwich = false;
+		bil->Update(10.0f, { 0,0,0,-0.3f });
+	}
+	else {
+		p->DrawOff();
+		bil->DrawOff();
+	}
 	if (!rayF)
 		text->UpDateText(L"レイトレオフ", 185.0f, 30.0f, 30.0f, { 1.0f, 1.0f, 1.0f, 1.0f });
 	else
@@ -571,7 +609,8 @@ void update() {
 	text->UpDate();
 }
 
-void draw(int com) {
+void draw() {
+	int com = 1;
 	if (!rayF) {
 		dx->Bigin(com);
 		dx->BiginDraw(com);
@@ -586,68 +625,55 @@ void draw(int com) {
 		gr->Draw(com);
 		wav->Draw(com);
 		sk->Draw(com);
-		bil->DrawBillboard();
-		if (eff[0])blur->ComputeBlur(true, 400, 300, 200);
-		else blur->ComputeBlur(false, 400, 300, 200);
-		if (eff[1])mosa->ComputeMosaic(true, 10);
-		else mosa->ComputeMosaic(false, 10);
-		text->Draw(com);
+		bil->DrawBillboard(com);
 		dx->EndDraw(com);
 		dx->End(com);
 		dx->WaitFence();
 	}
 	else {
+		dx->Bigin(com);
+		sk->StreamOutput(com);//update
+		sk1->StreamOutput(com);//update
+		p->StreamOutput(com);//update
+		bil->StreamOutputBillboard(com);//update
 		soto->StreamOutput(com);
-		sk->StreamOutput(com);
-		sk1->StreamOutput(com);
-		pd[0].StreamOutput(com);
+		pd[0].StreamOutput(com);//update
 		pd[1].StreamOutput(com);
 		pd[2].StreamOutput(com);
 		pd[3].StreamOutput(com);
 		md->StreamOutput(com);
-		gr->StreamOutput(com);
-		wav->StreamOutput(com);
-		p->StreamOutput(com);
-		bil->StreamOutputBillboard(com);
+		gr->StreamOutput(com);//update
+		wav->StreamOutput(com);//update
+		dx->End(com);
+		dx->WaitFence();
+
+		sk->UpdateDxrDivideBuffer();
+		sk1->UpdateDxrDivideBuffer();
+		pd[0].UpdateDxrDivideBuffer();
+		wav->UpdateDxrDivideBuffer();
+		gr->UpdateDxrDivideBuffer();
 	}
 }
 
-void raytrace(int com) {
+void AS() {
+	int com = 2;
+	if (rayF) {
+		dx->BiginCom(com);
+		dxr->update_c(com, 3);
+		dx->EndCom(com);
+		dx->WaitFenceCom();
+	}
+}
+
+void raytrace() {
+	int com = 3;
 	if (rayF) {
 		dx->Bigin(com);
-		dxr->raytrace(com, 3);
-		dx->End(com);
-		dx->WaitFence();
-
-		dx->Bigin(com);
-		dx->BiginDraw(com, false);
-		if (eff[0])blur->ComputeBlur(com, true, 400, 300, 200);
-		else blur->ComputeBlur(com, false, 400, 300, 200);
-		if (eff[1])mosa->ComputeMosaic(com, true, 10);
-		else mosa->ComputeMosaic(com, false, 10);
-		text->Draw(com);
-		dx->EndDraw(com);
+		dxr->updateVertexBuffer(com);
+		dxr->raytrace_g(com);
+		dxr->copyBackBuffer(com);
+		dxr->copyDepthBuffer(com);
 		dx->End(com);
 		dx->WaitFence();
 	}
-}
-
-unsigned __stdcall upDateThread(void*) {
-	while (UpDateThreadLoop[0]) {
-		WaitForSingleObject(eventBigin[0], INFINITE);
-		SetEvent(eventBigin[1]);
-		draw(0);
-		WaitForSingleObject(eventEnd[0], INFINITE);
-		SetEvent(eventEnd[1]);
-	}
-	return 0;
-}
-
-unsigned __stdcall rayDateThread(void*) {
-	while (UpDateThreadLoop[1]) {
-		WaitForSingleObject(eventBigin[1], INFINITE);
-		raytrace(1);
-		SetEvent(eventEnd[0]);
-	}
-	return 0;
 }

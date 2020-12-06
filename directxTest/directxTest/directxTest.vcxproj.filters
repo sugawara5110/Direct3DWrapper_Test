@@ -52,6 +52,9 @@
     <Filter Include="Common\DirectShowWrapper">
       <UniqueIdentifier>{201d2078-218a-48c0-a83d-06b5a801116c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="MultiThread">
+      <UniqueIdentifier>{8b44de61-59e7-4588-a527-d19824aa01a1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\FbxLoader\FbxLoader.cpp">
@@ -128,6 +131,12 @@
     </ClCompile>
     <ClCompile Include="test.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DxSkinnedCom.cpp">
+      <Filter>Common\Direct3DWrapper\DX_3DCG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\MultiThread\MultiThread.cpp">
+      <Filter>MultiThread</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -265,6 +274,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Common\DirectShowWrapper\Sound_.h">
       <Filter>Common\DirectShowWrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\ShaderCG\ShaderSkinMeshCom.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\ShaderCG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DxSkinnedCom.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\MultiThread\MultiThread.h">
+      <Filter>MultiThread</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

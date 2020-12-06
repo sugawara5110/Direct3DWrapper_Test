@@ -155,6 +155,7 @@
     <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Dx_PostEffect.cpp" />
     <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Dx_SkinMesh.cpp" />
     <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Dx_Wave.cpp" />
+    <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DxSkinnedCom.cpp" />
     <ClCompile Include="..\..\..\Common\DirectShowWrapper\Camera.cpp" />
     <ClCompile Include="..\..\..\Common\DirectShowWrapper\DsProcess_DsProcess.cpp" />
     <ClCompile Include="..\..\..\Common\DirectShowWrapper\Movie_GetFrame.cpp" />
@@ -166,6 +167,7 @@
     <ClCompile Include="..\..\..\FbxLoader\FbxLoader.cpp" />
     <ClCompile Include="..\..\..\FbxLoader\FbxMeshNode.cpp" />
     <ClCompile Include="..\..\..\JPGLoader\JPGLoader.cpp" />
+    <ClCompile Include="..\..\..\MultiThread\MultiThread.cpp" />
     <ClCompile Include="..\..\..\PNGLoader\PNGLoader.cpp" />
     <ClCompile Include="test.cpp" />
   </ItemGroup>
@@ -194,6 +196,7 @@
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\ShaderCG\ShaderParticle.h" />
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\ShaderCG\ShaderPostEffect.h" />
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\ShaderCG\ShaderSkinMesh.h" />
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\ShaderCG\ShaderSkinMeshCom.h" />
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\ShaderCG\ShaderSkinMesh_D.h" />
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\ShaderCG\ShaderWaveCom.h" />
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\ShaderCG\ShaderWaveDraw.h" />
@@ -201,6 +204,7 @@
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\ShaderCG\ShaderGsOutput.h" />
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\ShaderDXR\ShaderCommonDXR.h" />
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\ShaderDXR\ShaderParametersDXR.h" />
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DxSkinnedCom.h" />
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\MicroSoftLibrary\d3dx12.h" />
     <ClInclude Include="..\..\..\Common\DirectShowWrapper\Camera.h" />
     <ClInclude Include="..\..\..\Common\DirectShowWrapper\DsProcess.h" />
@@ -213,6 +217,7 @@
     <ClInclude Include="..\..\..\FbxLoader\FbxLoader.h" />
     <ClInclude Include="..\..\..\FbxLoader\FbxMeshNode.h" />
     <ClInclude Include="..\..\..\JPGLoader\JPGLoader.h" />
+    <ClInclude Include="..\..\..\MultiThread\MultiThread.h" />
     <ClInclude Include="..\..\..\PNGLoader\PNGLoader.h" />
   </ItemGroup>
   <ItemGroup>
