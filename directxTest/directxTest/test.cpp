@@ -187,14 +187,16 @@ void testDxInput() {
 	di->SetWindowMode(true);
 	di->setCorrectionX(1.015f);
 	di->setCorrectionY(1.055f);
-
+	int keyCnt = 0;
 	while (1) {
 		T_float::GetTime(hWnd);
 		T_float::GetTimeUp(hWnd);
 		if (!DispatchMSG(&msg)) {
 			break;
 		}
-		Directionkey key = con->Direction(false);
+		Directionkey key = con->Direction();
+		if(key != NOTPRESS)keyCnt++;
+		DxText::GetInstance()->UpDateValue(keyCnt, 10, 400, 30.0f, 5, { 0.3f, 1.0f, 0.3f, 1.0f });
 		Directionkey key2 = con->Direction();
 		int i = key;
 		int i2 = key2;
@@ -400,15 +402,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	mblur->ComCreateBlur();
 
 	p->CreateParticle(dx->GetTexNumber("leaf.png"), true, true);
+	bil->setMaterialType(EMISSIVE);
 	bil->CreateBillboard(true, true);
 	//dx->wireFrameTest(true);
 	md->CreateMesh();
+	sk1->setMaterialType(TRANSLUCENCE);
 	sk1->CreateFromFBX();
 	sk->CreateFromFBX();
 	sk->setInternalAnimationIndex(0);
 
 	sk1->setInternalAnimationIndex(0);
 
+	wav->setMaterialType(METALLIC);
 	wav->Create(dx->GetTexNumber("wave.jpg"), -1, true, true, 0.01f, 64.0f);
 
 	gr->Create(true, dx->GetTexNumber("ground3.jpg"),
@@ -418,10 +423,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	pd[0].Create(true, dx->GetTexNumber("wall1.jpg"),
 		dx->GetTexNumber("wall1Nor.png"),
 		dx->GetTexNumber("wall1.jpg"), false, false);
+	pd[1].setMaterialType(METALLIC);
 	pd[1].Create(true, dx->GetTexNumber("ceiling5.jpg"), -1/*dx->GetTexNumber("ceiling5Nor.png")*/, -1, false, false);
+	pd[2].setMaterialType(EMISSIVE);
 	pd[2].Create(true, dx->GetTexNumber("siro.png"), -1, -1, false, false);
 	pd[3].Create(true, dx->GetTexNumber("boss_magic.png"), -1, -1, true, true);
 
+	soto->setMaterialType(DIRECTIONLIGHT_NONREFLECTION);
 	soto->Create(true, dx->GetTexNumber("wall1.jpg"),
 		dx->GetTexNumber("wall1Nor.png"),
 		dx->GetTexNumber("wall1.jpg"), false, false);
@@ -470,25 +478,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	pdx[numMesh + numPolygon + numMesh1 + 3] = gr->getParameter();
 	pdx[numMesh + numPolygon + numMesh1 + 4] = soto->getParameter();
 
-	UINT numMT1 = numPolygon + numMaterial + numMaterial1 + 5 + 1;
-	MaterialType* type = new MaterialType[numMT1];
-
-	type[0] = NONREFLECTION;
-	type[1] = METALLIC;// TRANSLUCENCE;
-	type[2] = EMISSIVE;
-	type[3] = NONREFLECTION;
-	for (int i = numPolygon; i < numMaterial + numPolygon; i++)type[i] = NONREFLECTION;
-	//type[5] = EMISSIVE;
-	for (int i = numMaterial + numPolygon; i < numMaterial + numPolygon + numMaterial1; i++)type[i] = TRANSLUCENCE;
-	type[numMaterial + numPolygon + numMaterial1] = NONREFLECTION;
-	type[numMaterial + numPolygon + numMaterial1 + 1] = NONREFLECTION;
-	type[numMaterial + numPolygon + numMaterial1 + 2] = METALLIC;
-	type[numMaterial + numPolygon + numMaterial1 + 3] = EMISSIVE;
-	type[numMaterial + numPolygon + numMaterial1 + 4] = NONREFLECTION;
-	type[numMaterial + numPolygon + numMaterial1 + 5] = DIRECTIONLIGHT_NONREFLECTION;
-
 	dxr = new DXR_Basic();
-	dxr->initDXR(numMT, pdx, type, 10);
+	dxr->initDXR(numMT, pdx, 10);
 
 	eff[0] = false;
 	eff[1] = false;
@@ -624,7 +615,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	S_DELETE(mosa);
 	S_DELETE(mblur);
 	S_DELETE(soto);
-	ARR_DELETE(type);
 	ARR_DELETE(pdx);
 	S_DELETE(dxr);
 	DxInput::DeleteInstance();
