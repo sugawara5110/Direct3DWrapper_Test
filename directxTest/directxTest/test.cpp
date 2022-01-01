@@ -2,7 +2,10 @@
 //////////////////////////////////////DirectXテスト/////////////////////////////////////////////////////////////
 
 #include"../../../Common/Direct3DWrapper/Dx12Process.h"
-#include"../../../Common/Direct3DWrapper/DxText.h"
+#include"../../../Common/Direct3DWrapperOption/DxText.h"
+#include"../../../Common/Direct3DWrapperOption/Dx_ParticleData.h"
+#include"../../../Common/Direct3DWrapperOption/Dx_PostEffect.h"
+#include"../../../Common/Direct3DWrapperOption/Dx_Wave.h"
 #include"../../../Common/Window/Win.h"
 #include"../../../JPGLoader/JPGLoader.h"
 #include"../../../PNGLoader/PNGLoader.h"
@@ -11,6 +14,7 @@
 #include"../../../MultiThread/MultiThread.h"
 #include"../../../UserInterface/UserInterface.h"
 #include"../../../TIFLoader/TIFLoader.h"
+#include"../../../CreateGeometry/CreateGeometry.h"
 #include <Process.h>
 #define CURRWIDTH 1024
 #define CURRHEIGHT 768
@@ -168,7 +172,6 @@ PolygonData* soto;
 Movie* mov;
 PostEffect* blur, * mosa, * mblur;
 Control* con;
-int sync[3] = {};
 UserInterfaceMeter ui;
 UserInterfaceWindow wi;
 
@@ -243,6 +246,7 @@ void testDxInput() {
 int loop = 0;
 
 #include <vector>
+#include <memory>
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 
@@ -260,7 +264,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	dx->setPerspectiveFov(45, 0, 300);
 	dx->setNumResourceBarrier(1024);
 	dx->Initialize(hWnd, CURRWIDTH, CURRHEIGHT);
-	dx->setGlobalAmbientLight(0.0f, 0.0f, 0.0f);
+	dx->setGlobalAmbientLight(0.01f, 0.01f, 0.01f);
 	DxInput* di = DxInput::GetInstance();
 	di->create(hWnd);
 	di->SetWindowMode(true);
@@ -269,7 +273,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	di->setCorrectionX(1.015f);
 	di->setCorrectionY(1.055f);
 
-	SearchFile* sf = new SearchFile(1);
+	SearchFile* sf = new SearchFile(2);
 	char** strE = new char* [2];
 	strE[0] = "jpg";
 	strE[1] = "png";
@@ -278,14 +282,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	sf->Search(L"./tex/*", 0, strE, 2);
 	//sf->Search(L"../../../53394507/53394507_bldg_6677.fbm/*", 1, strE1, 1);
 	//sf->Search(L"../../../Black Dragon NEW/textures/*", 1, strE, 2);
+	sf->Search(L"../../../19496_open3dmodel/open3dmodel.com/Models_E0504A019/*", 1, strE, 2);
+	//sf->Search(L"../../../Smaug/textures/*", 1, strE, 2);
+	//sf->Search(L"../../../sphere-bot-with-hydraulics FBX 7.4 binary/Texture/*", 1, strE, 1);
+	//sf->Search(L"../../../106934_open3dmodel.com/Low-Poly Spider/textures/*", 1, strE, 2);
+	//sf->Search(L"../../../Alien/textures/*", 1, strE, 2);
 	UINT numFile1 = sf->GetFileNum(0);
-	UINT numFile2 = 0;// sf->GetFileNum(1);
+	UINT numFile2 = sf->GetFileNum(1);
 	JPGLoader jpg;
 	PNGLoader png;
 	TIFLoader tif;
 	UINT resCnt = 0;
 	ARR_DELETE(strE);
-	for (int k = 0; k < 1; k++) {
+	for (int k = 0; k < 2; k++) {
 		for (int i = 0; i < sf->GetFileNum(k); i++) {
 			char* str = sf->GetFileName(k, i);
 			UCHAR* byte = jpg.loadJPG(str, 0, 0, nullptr);
@@ -297,9 +306,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 				h = png.getSrcHeight();
 			}
 			if (byte == nullptr) {
-				byte = tif.loadTIF(str, 0, 0, nullptr);
-				w = tif.getSrcWidth();
-				h = tif.getSrcHeight();
+				byte = jpg.loadJPG(str, 0, 0, nullptr);
+				w = jpg.getSrcWidth();
+				h = jpg.getSrcHeight();
 			}
 			dx->createTextureArr(numFile1 + numFile2, resCnt++, Dx_Util::GetNameFromPass(str),
 				byte, DXGI_FORMAT_R8G8B8A8_UNORM,
@@ -361,37 +370,63 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	gr->setVertex(ver24aa, 24, &index36[30], 6);
 
 	md->SetCommandList(0);
-	md->SetState(false, false, false);
-	md->GetBuffer("mesh/tree.obj", 1);
+	md->SetState(true, false, false);
+	md->GetBuffer("mesh/tree.obj", 2);
 	md->SetVertex();
 
+
+	sk->SetCommandList(0);
+	sk->SetState(false, false);
+	//sk->ObjOffset(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0);
+	//sk->GetFbx("mesh/player2_fbx_att.fbx");
+	//HRESULT hr = sk->GetFbx("../../../Black Dragon NEW/Dragon_Baked_Actions_fbx_7.4_binary.fbx");
+	HRESULT hr = sk->GetFbx("../../../19496_open3dmodel/open3dmodel.com/Models_E0504A019/Crocodile.fbx");
+	//HRESULT hr = sk->GetFbx("../../../Smaug/smaug.fbx");
+	//HRESULT hr = sk->GetFbx("../../../19496_open3dmodel/open3dmodel.com/Models_E0504A019/wani.fbx");
+	//HRESULT hr = sk->GetFbx("../../../sphere-bot-with-hydraulics FBX 7.4 binary/sphere-bot-with-hydraulics.fbx");
+	//HRESULT hr = sk->GetFbx("../../../106934_open3dmodel.com/Low-Poly Spider/Spider.fbx");
+	//HRESULT hr = sk->GetFbx("../../../Alien/Test_Alien-Animal-Blender_2.81.fbx");
+	//HRESULT hr = sk->GetFbx("../../../boss1bone.fbx");
+
+	sk->GetBuffer(1,3200.0f,false);
+	//sk->noUseMeshIndex(0);
+	sk->SetVertex(true,true);
+
+
+
 	sk1->SetCommandList(0);
-	sk1->SetState(true, true, 1.0f, 1.0f);
-	sk1->ObjOffset(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0);
+	sk1->SetState(true, true, 0.0f, 0.0f);
+	//sk1->ObjOffset(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0);
 	sk1->GetFbx("mesh/player1_fbx_att.fbx");
 	//sk1->GetFbx("../../../53394507/untitled4.fbx");
 	//sk1->GetFbx("../../../53394507/untitled.fbx");
 	//sk1->GetFbx("../../../53394507/53394507_bldg_6677.fbx");
-	sk1->GetBuffer(2900.0f, true);
-	sk1->SetVertex(false);
+	sk1->GetBuffer(2,2900.0f,false);
+	sk1->SetVertex(true,true);
 
-	sk->SetCommandList(0);
-	sk->SetState(false, false);
-	sk->ObjOffset(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0);
-	sk->GetFbx("mesh/player2_fbx_att.fbx");
-	//HRESULT hr = sk->GetFbx("../../../Black Dragon NEW/Dragon_Baked_Actions_fbx_7.4_binary.fbx");
-	sk->GetBuffer(3200.0f);
-	sk->SetVertex();
 
 	pd[0].GetVBarray(CONTROL_POINT, 1);
-	pd[1].GetVBarray(SQUARE, 1);
+	pd[1].GetVBarray(SQUARE, 3);
 	pd[2].GetVBarray(SQUARE, 2);
 	pd[3].GetVBarray(SQUARE, 1);
 
-	pd[0].setVertex(ver24aa, sizeof(ver24aa) / sizeof(Vertex), index36, sizeof(index36) / sizeof(UINT));
-	pd[1].setVertex(ver24aa, sizeof(ver24aa) / sizeof(Vertex), index36, sizeof(index36) / sizeof(UINT));
+	VECTOR3 v3[] = { {},{2,0,0},{3,0,0} };
+	VECTOR3 v3s[] = { {1,1,1},{1,1,1},{1,1,1} };
+
+	Vertex* sv = (Vertex*)CreateGeometry::createSphere(10, 10, 3, v3, v3s,false);
+	unsigned int* svI = CreateGeometry::createSphereIndex(10, 10, 3);
+	
+	Vertex* v = (Vertex*)CreateGeometry::createCube(2, v3, v3s,false);
+	unsigned int* ind = CreateGeometry::createCubeIndex(2);
+	pd[0].setVertex(v, 24 * 2, ind, 36 * 2);
+	pd[1].setVertex(sv, 11 * 11 * 3, svI, 10 * 10 * 6 * 3);
 	pd[2].setVertex(ver24aa, sizeof(ver24aa) / sizeof(Vertex), index36, sizeof(index36) / sizeof(UINT));
 	pd[3].setVertex(ver24aa, sizeof(ver24aa) / sizeof(Vertex), index36, sizeof(index36) / sizeof(UINT));
+
+	ARR_DELETE(sv);
+	ARR_DELETE(svI);
+	ARR_DELETE(v);
+	ARR_DELETE(ind);
 
 	soto->GetVBarray(SQUARE, 1);
 	soto->setVertex(ver24aaRev, sizeof(ver24aaRev) / sizeof(Vertex), index36Rev, sizeof(index36Rev) / sizeof(UINT));
@@ -406,7 +441,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	bil->CreateBillboard(true, true);
 	//dx->wireFrameTest(true);
 	md->CreateMesh();
-	sk1->setMaterialType(TRANSLUCENCE);
+	//sk1->setMaterialType(TRANSLUCENCE);
 	sk1->CreateFromFBX();
 	sk->CreateFromFBX();
 	sk->setInternalAnimationIndex(0);
@@ -414,7 +449,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	sk1->setInternalAnimationIndex(0);
 
 	wav->setMaterialType(METALLIC);
-	wav->Create(dx->GetTexNumber("wave.jpg"), -1, true, true, 0.01f, 64.0f);
+	wav->Create(dx->GetTexNumber("wave.jpg"), -1, true, true, 0.031f, 64.0f,true);
 
 	gr->Create(true, dx->GetTexNumber("ground3.jpg"),
 		dx->GetTexNumber("ground3Nor.png"),
@@ -422,7 +457,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	pd[0].Create(true, dx->GetTexNumber("wall1.jpg"),
 		dx->GetTexNumber("wall1Nor.png"),
-		dx->GetTexNumber("wall1.jpg"), false, false);
+		dx->GetTexNumber("wall1.jpg"), false, false,false);
 	pd[1].setMaterialType(METALLIC);
 	pd[1].Create(true, dx->GetTexNumber("ceiling5.jpg"), -1/*dx->GetTexNumber("ceiling5Nor.png")*/, -1, false, false);
 	pd[2].setMaterialType(EMISSIVE);
@@ -462,6 +497,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	UINT numMT = numPolygon + numMesh + numMesh1 + 5;
 
 	ParameterDXR** pdx = new ParameterDXR * [numMT];
+	
 	for (int i = 0; i < numPolygon; i++)
 		pdx[i] = pd[i].getParameter();
 	for (int i = numPolygon; i < numMesh + numPolygon; i++) {
@@ -502,42 +538,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		MatrixRotationZ(&camThetaZ, camTheta * 360.0f);
 		VectorMatrixMultiply(&cam1, &camThetaZ);
 		
-
 		dx->Bigin(0);
-		bil->SetTextureMPixel(mov->GetFrame(256, 256, 50));
+		bil->SetTextureMPixel(0, mov->GetFrame(256, 256, 50));
 		dx->End(0);
 
-		/*dx->RunGpu();
-		dx->WaitFence();*/
-		sync[0] = 1 - sync[0];
-		sync[1] = 1 - sync[1];
-		sync[2] = 1 - sync[2];
-		dx->setUpSwapIndex(sync[0]);
-		dx->setDrawSwapIndex(1 - sync[0]);
-		dx->setStreamOutputSwapIndex(sync[1]);
-		dx->setRaytraceSwapIndex(1 - sync[1]);
-		dxr->setASswapIndex(sync[2]);
-		dxr->setRaytraceSwapIndex(1 - sync[2]);
+		dxr->allSwapIndex();
 
 		dx->Cameraset({ cam1.x, cam1.y, cam1.z }, { 0, 0, 0 });
-		
-		/*update();
-		draw();
-		dx->RunGpu();
-		dx->WaitFence();
-		UpdateDxrDivideBuffer();
-		AS();
-		dx->RunGpu();
-		dx->WaitFence();
-		raytrace();
-		dx->RunGpuCom();
-		dx->WaitFenceCom();
-		dx->Bigin(0);
-		dxr->copyBackBuffer(0);
-		dxr->copyDepthBuffer(0);
-		dx->End(0);
-		dx->RunGpu();
-		dx->WaitFence();*/
 		
 		th.wait();
 
@@ -562,7 +569,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		dx->Bigin(4);
 		dx->BiginDraw(4, false);
-		//p->Draw(4);
+		p->Draw(4);
 		dx->EndDraw(4);
 		dx->End(4);
 		dx->RunGpu();
@@ -601,10 +608,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	dx->WaitFence();
 	dx->WaitFenceCom();
-	ARR_DELETE(pd);
 	S_DELETE(gr);
-	S_DELETE(sk);
-	S_DELETE(sk1);
 	S_DELETE(sf);
 	S_DELETE(md);
 	S_DELETE(p);
@@ -615,6 +619,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	S_DELETE(mosa);
 	S_DELETE(mblur);
 	S_DELETE(soto);
+	S_DELETE(sk);
+	S_DELETE(sk1);
+	ARR_DELETE(pd);
 	ARR_DELETE(pdx);
 	S_DELETE(dxr);
 	DxInput::DeleteInstance();
@@ -673,18 +680,20 @@ void update() {
 
 	pd[0].Instancing({ (float)35, 0, 20 },
 		{ 0, 0, thetaO },
-		{ 7, 7, 7 });
-	pd[0].InstancingUpdate({ 0, 0, 0, 0 },
+		{ 7, 7, 7 }, { 0, 0, 0, 0 });
+	pd[0].InstancingUpdate(
 		1,
 		4.0f);
-
-	for (int b = 0; b < 1; b++) {
-		if (insCnt > b * 100)
-			pd[1].Instancing({ (float)-38 + (b * 30), 0, 25 },
-				{ 0, 0, thetaO },
-				{ 7, 7, 7 });
+	float r = (float)(rand() % 11) * 0.1f;
+	float g = (float)(rand() % 11) * 0.1f;
+	float b1 = (float)(rand() % 11) * 0.1f;
+	
+	for (int b = 0; b < 3; b++) {
+		pd[1].Instancing({ (float)-38, b * 10.0f, 25 },
+			{ 0, 0, thetaO },
+			{ 7, 7, 7 }, { -r, -g, -b1, 0 });
 	}
-	pd[1].InstancingUpdate({ 0, 0, 0, 0 },
+	pd[1].InstancingUpdate(
 		0,
 		4.0f);
 	pd[1].setRefractiveIndex(0.1f);
@@ -692,79 +701,92 @@ void update() {
 
 	pd[2].Instancing({ light1.x, light1.y, light1.z },
 		{ 0, 0, 0 },
-		{ 1, 1, 1 });
+		{ 1, 1, 1 }, { 0, 0, 0, 0 });
 
 	pd[2].Instancing({ light2.x, light2.y, light2.z },
 		{ 0, 0, 0 },
-		{ 1, 1, 1 });
-	pd[2].InstancingUpdate({ 0, 0, 0, 0 },
+		{ 1, 1, 1 }, { 0, 0, 0, 0 });
+	pd[2].InstancingUpdate(
 		0,
 		4.0f);
 
 	pd[3].Instancing({ 0, 0, 15 },
 		{ 0, 0, thetaO },
-		{ 4, 4, 4 });
-	pd[3].InstancingUpdate({ 0, 0, 0, 0 },
+		{ 4, 4, 4 }, { 0, 0, 0, 0 });
+	pd[3].InstancingUpdate(
 		0,
 		4.0f);
 
 	float m = tfloat.Add(1.0f);
 
-	//if (d) {
-		/*sk->Update(0, m,
-			{ 0, 0, 0 },
-			{ 0, 0, 0, 0 },
-			{ 90, 0, 0 },
-			{ 0.005f,0.005f,0.005f });*/
-
-	sk->Update(0, m,
-		{ 15, 0, 0 },
+	
+	/*sk->Update(0, m,
+		{ 10, 0, 0 },
 		{ 0, 0, 0, 0 },
 		{ 0, 0, 0 },
-		{ 1.6f,1.6f,1.6f });
+		{ 0.005f,0.005f,0.005f });*/
+
+	sk->Update(0, m,
+		{ 2, -5, 0 },
+		{ 0, 0, 0, 0 },
+		{ 90, 0, 0 },
+		{ 0.2f,0.2f,0.2f });
+
+	/*sk->Update(0, m,
+		{ 5, 0, 0 },
+		{ 0, 0, 0, 0 },
+		{ 0, 0, 0 },
+		{ 1.6f,1.6f,1.6f });*/
 	sk->setAllRefractiveIndex(0.1f);
 	//}
 	//else sk->DrawOff();
 
 	static float Refractive = 0.0f;
-	sk1->Update(0, m,
-		{ 0, 0, 0 },
+	for (int i = 0; i < 2; i++) {
+		sk1->Instancing({ (float)-20+i*15.0f, 0, 0 },
+			{ 0, 0, 0, -0.00f },
+			{ -90, 0, 0 },
+			{ 1.6f,1.6f,1.6f });
+	}
+	sk1->InstancingUpdate(0, m);
+	/*sk1->Update(0, m,
+		{ -20, 0, 0 },
 		{ 0, 0, 0, -0.00f },
-		{ 0, 0, 0 },
-		{ 0.3f,0.3f,0.3f });
+		{-90, 0, 0 },
+		{ 1.6f,1.6f,1.6f });*/
 	sk1->setAllRefractiveIndex(Refractive);
 
 	md->Instancing({ 0, 0, -10 },
 		{ 0, 0, 0 },
-		{ 1,1,1 });
+		{ 1,1,1 }, { 0, 0, 0, 0 });
 	md->Instancing({ 0, 0, 30 },
 		{ 0, 0, 0 },
-		{ 1,1,1 });
+		{ 1,1,1 }, { 0, 0, 0, 0 });
 	md->InstancingUpdate(
-		{ 0, 0, 0, 0 }, 0, 4.0);
+		0, 4.0);
 
 	float m2 = tfloat.Add(0.003f);
 	if (d) {
 		wav->Instancing(m2, { 0, 0, -20 },
 			{ 0,0,0 },
-			{ 60, 60, 15 });
-		wav->InstancingUpdate({ 0, 0, 0, -0.1f },
+			{ 60, 60, 15 }, { 0, 0, 0, -0.1f });
+		wav->InstancingUpdate(
 			0.0000f, 4.0f);
 	}
 	else wav->DrawOff();
 
 	gr->Instancing({ 0, 0, -28 },
 		{ 0, 0, 0 },
-		{ 60, 60, 15 });
+		{ 60, 60, 15 }, { 0, 0, 0, 0 });
 
-	gr->InstancingUpdate({ 0, 0, 0, 0 },
+	gr->InstancingUpdate(
 		0.01f,
 		1.0f);
 
 	soto->Instancing({ 0, 0, 0 },
 		{ 0, 0, 0 },
-		{ 60, 60, 60 });
-	soto->InstancingUpdate({ 0, 0, 0, 0 },
+		{ 60, 60, 60 }, { 0, 0, 0, 0 });
+	soto->InstancingUpdate(
 		0,
 		4.0f);
 
@@ -777,7 +799,8 @@ void update() {
 	if (1) {
 		p->Update({ 0,0,5 }, { 0,0,0 }, 0, 0.1f, parSwich, sp);
 		parSwich = false;
-		bil->Update(10.0f, { 0,0,0,-0.3f });
+		//bil->Update(10.0f, { 0,0,0,-0.3f });
+		bil->Update({5,0,0}, { 0,0,0,-0.3f }, 50, 10.0f, false, 0);
 	}
 	else {
 		p->DrawOff();
@@ -805,7 +828,7 @@ void update() {
 		light[2] = 1.0f - ui.updatePosMouse(4, 0.0f);
 		light[3] = 1.0f - ui.updatePosMouse(5, 0.0f);
 		float tMin = 0.001f + 200.0f * ui.updatePosMouse(6, 0.0f);
-		float tMax = 200.0f - 200.0f * ui.updatePosMouse(7, 0.0f);
+		float tMax = 300.0f - 300.0f * ui.updatePosMouse(7, 0.0f);
 		dxr->setTMin_TMax(tMin, tMax);
 	}
 	int rF = wi.updatePos(0, 200, 100);
@@ -817,6 +840,10 @@ void update() {
 	else
 		text->UpDateText(L"モザイクオン", 185.0f, 60.0f, 30.0f, { 1.0f, 0.0f, 0.0f, 1.0f });
 	text->UpDate();
+
+	if (Dx_Util::getErrorState()) {
+		int g = 0;
+	}
 }
 
 void draw() {

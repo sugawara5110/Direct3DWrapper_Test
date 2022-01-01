@@ -64,14 +64,23 @@
     <Filter Include="Common\Direct3DWrapper\DX_3DCG\DXR">
       <UniqueIdentifier>{0531e7f8-861c-41f4-b01e-f46e63ba453f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG">
-      <UniqueIdentifier>{b343f992-69a6-4c11-990e-07e70993416e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR">
       <UniqueIdentifier>{a67d3e67-616b-4e83-bb7a-b77126a5abc2}</UniqueIdentifier>
     </Filter>
     <Filter Include="TIFLoader">
       <UniqueIdentifier>{e5a0da79-92f5-406f-9c96-076d6c1029c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CreateGeometry">
+      <UniqueIdentifier>{292f9413-7ea5-4413-a003-a3893e64dbda}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG">
+      <UniqueIdentifier>{b343f992-69a6-4c11-990e-07e70993416e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Direct3DWrapperOption">
+      <UniqueIdentifier>{ef70bf8b-44cf-4ea1-a1bf-841cf754bee3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Direct3DWrapperOption\Shader">
+      <UniqueIdentifier>{3ccec614-0475-4faa-b0b8-9a82ee8a18b5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -138,9 +147,6 @@
     <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx12ProcessCore.cpp">
       <Filter>Common\Direct3DWrapper\DX_3DCG\Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Common\Direct3DWrapper\DxText.cpp">
-      <Filter>Common\Direct3DWrapper</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_PolygonData2D.cpp">
       <Filter>Common\Direct3DWrapper\DX_3DCG\Core</Filter>
     </ClCompile>
@@ -156,7 +162,7 @@
     <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_Util.cpp">
       <Filter>Common\Direct3DWrapper\DX_3DCG\Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_PolygonData.cpp">
+    <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_BasicPolygon.cpp">
       <Filter>Common\Direct3DWrapper\DX_3DCG\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\TIFLoader\TIFLoader.cpp">
@@ -165,20 +171,29 @@
     <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Dx_MeshData.cpp">
       <Filter>Common\Direct3DWrapper\DX_3DCG</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Dx_ParticleData.cpp">
-      <Filter>Common\Direct3DWrapper\DX_3DCG</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Dx_PostEffect.cpp">
-      <Filter>Common\Direct3DWrapper\DX_3DCG</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Dx_SkinMesh.cpp">
-      <Filter>Common\Direct3DWrapper\DX_3DCG</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Dx_Wave.cpp">
       <Filter>Common\Direct3DWrapper\DX_3DCG</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DxSkinnedCom.cpp">
       <Filter>Common\Direct3DWrapper\DX_3DCG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Dx_PolygonData.cpp">
+      <Filter>Common\Direct3DWrapper\DX_3DCG</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\CreateGeometry\CreateGeometry.cpp">
+      <Filter>CreateGeometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Common\Direct3DWrapperOption\Dx_ParticleData.cpp">
+      <Filter>Common\Direct3DWrapperOption</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Common\Direct3DWrapperOption\Dx_PostEffect.cpp">
+      <Filter>Common\Direct3DWrapperOption</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Common\Direct3DWrapperOption\Dx_Wave.cpp">
+      <Filter>Common\Direct3DWrapperOption</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Common\Direct3DWrapperOption\DxText.cpp">
+      <Filter>Common\Direct3DWrapperOption</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -194,13 +209,7 @@
     <ClInclude Include="..\..\..\JPGLoader\JPGLoader.h">
       <Filter>JPGLoader</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\MicroSoftLibrary\d3dx12.h">
-      <Filter>Common\Direct3DWrapper\MicroSoftLibrary</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\Dx12Process.h">
-      <Filter>Common\Direct3DWrapper</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DxText.h">
       <Filter>Common\Direct3DWrapper</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Common\Window\Control.h">
@@ -248,60 +257,6 @@
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\DxStruct.h">
       <Filter>Common\Direct3DWrapper\DX_3DCG\Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\Shader2D.h">
-      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\Shader3D.h">
-      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\ShaderCalculateLighting.h">
-      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\ShaderCommonParameters.h">
-      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\ShaderCommonPS.h">
-      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\ShaderCommonTriangleGS.h">
-      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\ShaderCommonTriangleHSDS.h">
-      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\ShaderGsOutput.h">
-      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\ShaderMesh.h">
-      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\ShaderMesh_D.h">
-      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\ShaderNormalTangent.h">
-      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\ShaderParticle.h">
-      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\ShaderPostEffect.h">
-      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\ShaderSkinMesh.h">
-      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\ShaderSkinMesh_D.h">
-      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\ShaderSkinMeshCom.h">
-      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\ShaderWaveCom.h">
-      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\ShaderWaveDraw.h">
-      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR\ShaderBasicDXR.h">
       <Filter>Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR</Filter>
     </ClInclude>
@@ -335,20 +290,83 @@
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Dx_MeshData.h">
       <Filter>Common\Direct3DWrapper\DX_3DCG</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Dx_ParticleData.h">
-      <Filter>Common\Direct3DWrapper\DX_3DCG</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Dx_PostEffect.h">
-      <Filter>Common\Direct3DWrapper\DX_3DCG</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Dx_SkinMesh.h">
-      <Filter>Common\Direct3DWrapper\DX_3DCG</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Dx_Wave.h">
       <Filter>Common\Direct3DWrapper\DX_3DCG</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DxSkinnedCom.h">
       <Filter>Common\Direct3DWrapper\DX_3DCG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Dx_PolygonData.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\CreateGeometry\CreateGeometry.h">
+      <Filter>CreateGeometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\Shader2D.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\Shader3D.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\ShaderCalculateLighting.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\ShaderCommonParameters.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\ShaderCommonPS.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\ShaderCommonTriangleGS.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\ShaderCommonTriangleHSDS.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\ShaderGsOutput.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\ShaderMesh.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\ShaderMesh_D.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\ShaderNormalTangent.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\ShaderSkinMesh.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\ShaderSkinMesh_D.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\ShaderSkinMeshCom.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapperOption\Shader\ShaderParticle.h">
+      <Filter>Common\Direct3DWrapperOption\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapperOption\Shader\ShaderPostEffect.h">
+      <Filter>Common\Direct3DWrapperOption\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapperOption\Shader\ShaderWaveCom.h">
+      <Filter>Common\Direct3DWrapperOption\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapperOption\Shader\ShaderWaveDraw.h">
+      <Filter>Common\Direct3DWrapperOption\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapperOption\Dx_ParticleData.h">
+      <Filter>Common\Direct3DWrapperOption</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapperOption\Dx_PostEffect.h">
+      <Filter>Common\Direct3DWrapperOption</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapperOption\Dx_Wave.h">
+      <Filter>Common\Direct3DWrapperOption</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapperOption\DxText.h">
+      <Filter>Common\Direct3DWrapperOption</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
