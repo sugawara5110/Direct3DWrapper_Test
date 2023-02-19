@@ -41,13 +41,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -73,7 +73,7 @@
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -102,10 +102,14 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <Optimization>Custom</Optimization>
       <AdditionalIncludeDirectories>D:\Info_tech_eng\FE\VS Express 2013 for Desktop\カメラライブラリ;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -140,23 +144,27 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Common\Direct3DWrapperOption\DxText.cpp" />
+    <ClCompile Include="..\..\..\Common\Direct3DWrapperOption\Dx_Bloom.cpp" />
     <ClCompile Include="..\..\..\Common\Direct3DWrapperOption\Dx_ParticleData.cpp" />
     <ClCompile Include="..\..\..\Common\Direct3DWrapperOption\Dx_PostEffect.cpp" />
     <ClCompile Include="..\..\..\Common\Direct3DWrapperOption\Dx_Wave.cpp" />
     <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\DxCommandQueue.cpp" />
     <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_CommandListObj.cpp" />
     <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx12ProcessCore.cpp" />
+    <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_CommandManager.cpp" />
     <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_Common.cpp" />
     <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_Device.cpp" />
     <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_BasicPolygon.cpp" />
     <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_PolygonData2D.cpp" />
+    <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_Resource.cpp" />
     <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_ShaderHolder.cpp" />
     <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_Util.cpp" />
-    <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\DXR_Basic.cpp" />
+    <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\DxrRenderer.cpp" />
     <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DxSkinnedCom.cpp" />
     <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Dx_MeshData.cpp" />
     <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Dx_PolygonData.cpp" />
@@ -166,6 +174,7 @@
     <ClCompile Include="..\..\..\Common\DirectShowWrapper\DsProcess_DsProcess.cpp" />
     <ClCompile Include="..\..\..\Common\DirectShowWrapper\Movie_GetFrame.cpp" />
     <ClCompile Include="..\..\..\Common\DirectShowWrapper\Sound__sound.cpp" />
+    <ClCompile Include="..\..\..\Common\DIrectStorageWrapper\DStorage.cpp" />
     <ClCompile Include="..\..\..\Common\SearchFile\SearchFile.cpp" />
     <ClCompile Include="..\..\..\Common\Window\Control_Direction.cpp" />
     <ClCompile Include="..\..\..\Common\Window\Win.cpp" />
@@ -179,13 +188,16 @@
     <ClCompile Include="..\..\..\PNGLoader\PNGLoader.cpp" />
     <ClCompile Include="..\..\..\TIFLoader\TIFLoader.cpp" />
     <ClCompile Include="..\..\..\UserInterface\UserInterface.cpp" />
+    <ClCompile Include="SkinObj\SkinObj.cpp" />
     <ClCompile Include="test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Common\Direct3DWrapperOption\DxText.h" />
+    <ClInclude Include="..\..\..\Common\Direct3DWrapperOption\Dx_Bloom.h" />
     <ClInclude Include="..\..\..\Common\Direct3DWrapperOption\Dx_ParticleData.h" />
     <ClInclude Include="..\..\..\Common\Direct3DWrapperOption\Dx_PostEffect.h" />
     <ClInclude Include="..\..\..\Common\Direct3DWrapperOption\Dx_Wave.h" />
+    <ClInclude Include="..\..\..\Common\Direct3DWrapperOption\Shader\ShaderBloom.h" />
     <ClInclude Include="..\..\..\Common\Direct3DWrapperOption\Shader\ShaderParticle.h" />
     <ClInclude Include="..\..\..\Common\Direct3DWrapperOption\Shader\ShaderPostEffect.h" />
     <ClInclude Include="..\..\..\Common\Direct3DWrapperOption\Shader\ShaderWaveCom.h" />
@@ -196,7 +208,9 @@
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx12ProcessCore.h" />
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\DxEnum.h" />
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\DxStruct.h" />
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_CommandManager.h" />
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_Device.h" />
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_Resource.h" />
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_ShaderHolder.h" />
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_Util.h" />
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\Shader2D.h" />
@@ -213,10 +227,17 @@
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\ShaderSkinMesh.h" />
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\ShaderSkinMeshCom.h" />
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ShaderCG\ShaderSkinMesh_D.h" />
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\DXR_Basic.h" />
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR\ShaderBasicDXR.h" />
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR\ShaderCommonDXR.h" />
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR\ShaderParametersDXR.h" />
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\DxrRenderer.h" />
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR\ShaderTraceRay.h" />
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR\ShaderBasicAnyHit.h" />
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR\ShaderEmissiveMiss.h" />
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR\ShaderBasicMiss.h" />
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR\ShaderEmissiveHit.h" />
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR\ShaderBasicHit.h" />
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR\ShaderRayGen.h" />
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR\ShaderCommon.h" />
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR\ShaderGlobalParameters.h" />
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR\ShaderLocalParameters.h" />
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DxSkinnedCom.h" />
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Dx_MeshData.h" />
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Dx_PolygonData.h" />
@@ -226,6 +247,7 @@
     <ClInclude Include="..\..\..\Common\DirectShowWrapper\DsProcess.h" />
     <ClInclude Include="..\..\..\Common\DirectShowWrapper\Movie.h" />
     <ClInclude Include="..\..\..\Common\DirectShowWrapper\Sound_.h" />
+    <ClInclude Include="..\..\..\Common\DIrectStorageWrapper\DStorage.h" />
     <ClInclude Include="..\..\..\Common\SearchFile\SearchFile.h" />
     <ClInclude Include="..\..\..\Common\Window\Control.h" />
     <ClInclude Include="..\..\..\Common\Window\Win.h" />
@@ -239,8 +261,19 @@
     <ClInclude Include="..\..\..\PNGLoader\PNGLoader.h" />
     <ClInclude Include="..\..\..\TIFLoader\TIFLoader.h" />
     <ClInclude Include="..\..\..\UserInterface\UserInterface.h" />
+    <ClInclude Include="SkinObj\SkinObj.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\Microsoft.Direct3D.DirectStorage.1.0.0\build\Microsoft.Direct3D.DirectStorage.targets" Condition="Exists('..\packages\Microsoft.Direct3D.DirectStorage.1.0.0\build\Microsoft.Direct3D.DirectStorage.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>このプロジェクトは、このコンピューター上にない NuGet パッケージを参照しています。それらのパッケージをダウンロードするには、[NuGet パッケージの復元] を使用します。詳細については、http://go.microsoft.com/fwlink/?LinkID=322105 を参照してください。見つからないファイルは {0} です。</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.Direct3D.DirectStorage.1.0.0\build\Microsoft.Direct3D.DirectStorage.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Direct3D.DirectStorage.1.0.0\build\Microsoft.Direct3D.DirectStorage.targets'))" />
+  </Target>
 </Project>

@@ -1,11 +1,12 @@
-
 //////////////////////////////////////DirectXテスト/////////////////////////////////////////////////////////////
 
+#define _CRT_SECURE_NO_WARNINGS
 #include"../../../Common/Direct3DWrapper/Dx12Process.h"
 #include"../../../Common/Direct3DWrapperOption/DxText.h"
 #include"../../../Common/Direct3DWrapperOption/Dx_ParticleData.h"
 #include"../../../Common/Direct3DWrapperOption/Dx_PostEffect.h"
 #include"../../../Common/Direct3DWrapperOption/Dx_Wave.h"
+#include"../../../Common/Direct3DWrapperOption/Dx_Bloom.h"
 #include"../../../Common/Window/Win.h"
 #include"../../../JPGLoader/JPGLoader.h"
 #include"../../../PNGLoader/PNGLoader.h"
@@ -16,124 +17,25 @@
 #include"../../../TIFLoader/TIFLoader.h"
 #include"../../../CreateGeometry/CreateGeometry.h"
 #include <Process.h>
+#include"../../../Common/DirectStorageWrapper/DStorage.h"
+#include "SkinObj/SkinObj.h"
 #define CURRWIDTH 1024
 #define CURRHEIGHT 768
-//#define CURRWIDTH 1920
-//#define CURRHEIGHT 1080
-//#define CURRWIDTH 640
-//#define CURRHEIGHT 480
-/*#define CURRWIDTH 1920
-#define CURRHEIGHT 1080
-#define CURRWIDTH 1600
-#define CURRHEIGHT 900*/
-#define _CRT_SECURE_NO_WARNINGS
+
 using namespace CoordTf;
-static Vertex ver24aa[] =
+
+static Vertex ver4[] =
 {
-	{ {-1.0f, 1.0f, -1.0f}, {0.0f, 1.0f, 0.0f} ,{0.0f,0.0f}},
-	{ {1.0f, 1.0f, -1.0f}, {0.0f, 1.0f, 0.0f} ,{1.0f,0.0f}},
-	{ {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f, 0.0f} ,{1.0f,1.0f}},
-	{ {-1.0f, 1.0f, 1.0f}, {0.0f, 1.0f, 0.0f},{0.0f,1.0f} },
-
-	{ {-1.0f, -1.0f, -1.0f}, {0.0f, -1.0f, 0.0f},{0.0f,0.0f} },
-	{ {1.0f, -1.0f, -1.0f}, {0.0f, -1.0f, 0.0f} ,{1.0f,0.0f}},
-	{ {1.0f, -1.0f, 1.0f}, {0.0f, -1.0f, 0.0f} ,{1.0f,1.0f}},
-	{ {-1.0f, -1.0f, 1.0f}, {0.0f, -1.0f, 0.0f} ,{0.0f,1.0f}},
-
-	{ {-1.0f, -1.0f, 1.0f}, {-1.0f, 0.0f, 0.0f} ,{0.0f,0.0f}},
-	{ {-1.0f, -1.0f, -1.0f}, {-1.0f, 0.0f, 0.0f} ,{1.0f,0.0f}},
-	{ {-1.0f, 1.0f, -1.0f}, {-1.0f, 0.0f, 0.0f} ,{1.0f,1.0f}},
-	{ {-1.0f, 1.0f, 1.0f}, {-1.0f, 0.0f, 0.0f} ,{0.0f,1.0f}},
-
-	{ {1.0f, -1.0f, 1.0f}, {1.0f, 0.0f, 0.0f} ,{0.0f,0.0f}},
-	{ {1.0f, -1.0f, -1.0f}, {1.0f, 0.0f, 0.0f} ,{1.0f,0.0f}},
-	{ {1.0f, 1.0f, -1.0f}, {1.0f, 0.0f, 0.0f} ,{1.0f,1.0f}},
-	{ {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f, 0.0f} ,{0.0f,1.0f}},
-
-	{ {-1.0f, -1.0f, -1.0f}, {0.0f, 0.0f, -1.0f} ,{0.0f,0.0f}},
-	{ {1.0f, -1.0f, -1.0f}, {0.0f, 0.0f, -1.0f} ,{1.0f,0.0f}},
-	{ {1.0f, 1.0f, -1.0f}, {0.0f, 0.0f, -1.0f} ,{1.0f,1.0f}},
-	{ {-1.0f, 1.0f, -1.0f}, {0.0f, 0.0f, -1.0f} ,{0.0f,1.0f}},
-
 	{ {-1.0f, -1.0f, 1.0f}, {0.0f, 0.0f, 1.0f} ,{0.0f,0.0f}},
 	{ {1.0f, -1.0f, 1.0f}, {0.0f, 0.0f, 1.0f} ,{1.0f,0.0f}},
 	{ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 1.0f} ,{1.0f,1.0f}},
 	{ {-1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 1.0f} ,{0.0f,1.0f}},
 };
 
-static UINT index36[] =
+static UINT index6[] =
 {
-	3,1,0,
-	2,1,3,
-
-	6,4,5,
-	7,4,6,
-
-	11,9,8,
-	10,9,11,
-
-	14,12,13,
-	15,12,14,
-
-	19,17,16,
-	18,17,19,
-
-	22,20,21,
-	23,20,22
-};
-
-static Vertex ver24aaRev[] =
-{
-	{ {-1.0f, 1.0f, -1.0f}, {0.0f, -1.0f, 0.0f} ,{0.0f,0.0f}},
-	{ {1.0f, 1.0f, -1.0f}, {0.0f, -1.0f, 0.0f} ,{1.0f,0.0f}},
-	{ {1.0f, 1.0f, 1.0f}, {0.0f, -1.0f, 0.0f} ,{1.0f,1.0f}},
-	{ {-1.0f, 1.0f, 1.0f}, {0.0f, -1.0f, 0.0f},{0.0f,1.0f} },
-
-	{ {-1.0f, -1.0f, -1.0f}, {0.0f, 1.0f, 0.0f},{0.0f,0.0f} },
-	{ {1.0f, -1.0f, -1.0f}, {0.0f, 1.0f, 0.0f} ,{1.0f,0.0f}},
-	{ {1.0f, -1.0f, 1.0f}, {0.0f, 1.0f, 0.0f} ,{1.0f,1.0f}},
-	{ {-1.0f, -1.0f, 1.0f}, {0.0f, 1.0f, 0.0f} ,{0.0f,1.0f}},
-
-	{ {-1.0f, -1.0f, 1.0f}, {1.0f, 0.0f, 0.0f} ,{0.0f,0.0f}},
-	{ {-1.0f, -1.0f, -1.0f}, {1.0f, 0.0f, 0.0f} ,{1.0f,0.0f}},
-	{ {-1.0f, 1.0f, -1.0f}, {1.0f, 0.0f, 0.0f} ,{1.0f,1.0f}},
-	{ {-1.0f, 1.0f, 1.0f}, {1.0f, 0.0f, 0.0f} ,{0.0f,1.0f}},
-
-	{ {1.0f, -1.0f, 1.0f}, {-1.0f, 0.0f, 0.0f} ,{0.0f,0.0f}},
-	{ {1.0f, -1.0f, -1.0f}, {-1.0f, 0.0f, 0.0f} ,{1.0f,0.0f}},
-	{ {1.0f, 1.0f, -1.0f}, {-1.0f, 0.0f, 0.0f} ,{1.0f,1.0f}},
-	{ {1.0f, 1.0f, 1.0f}, {-1.0f, 0.0f, 0.0f} ,{0.0f,1.0f}},
-
-	{ {-1.0f, -1.0f, -1.0f}, {0.0f, 0.0f, 1.0f} ,{0.0f,0.0f}},
-	{ {1.0f, -1.0f, -1.0f}, {0.0f, 0.0f, 1.0f} ,{1.0f,0.0f}},
-	{ {1.0f, 1.0f, -1.0f}, {0.0f, 0.0f, 1.0f} ,{1.0f,1.0f}},
-	{ {-1.0f, 1.0f, -1.0f}, {0.0f, 0.0f, 1.0f} ,{0.0f,1.0f}},
-
-	{ {-1.0f, -1.0f, 1.0f}, {0.0f, 0.0f, -1.0f} ,{0.0f,0.0f}},
-	{ {1.0f, -1.0f, 1.0f}, {0.0f, 0.0f, -1.0f} ,{1.0f,0.0f}},
-	{ {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, -1.0f} ,{1.0f,1.0f}},
-	{ {-1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, -1.0f} ,{0.0f,1.0f}},
-};
-
-static UINT index36Rev[] =
-{
-	1,3,0,
-	1,2,3,
-
-	4,6,5,
-	4,7,6,
-
-	9,11,8,
-	9,10,11,
-
-	12,14,13,
-	12,15,14,
-
-	17,19,16,
-	17,18,19,
-
-	20,22,21,
-	20,23,22
+	0,1,2,
+	0,2,3
 };
 
 void update();
@@ -146,7 +48,7 @@ float theta = 0;
 float thetaO = 0;
 float camTheta = 0;
 int insCnt = 0;
-static bool rayF123= false;
+static bool rayF123 = false;
 bool eff[4];
 T_float tfloat;
 int parCnt = 0;
@@ -159,10 +61,11 @@ HWND hWnd;
 MSG msg;
 Dx12Process* dx;
 DxText* text;
-DXR_Basic* dxr;
+DxrRenderer* dxr;
 PolygonData* pd;
+PolygonData* pdbl;
 SkinMesh* sk;
-SkinMesh* sk1;
+SkinObj* sk1;
 MeshData* md;
 Wave* wav;
 ParticleData* p;
@@ -170,109 +73,25 @@ ParticleData* bil;
 PolygonData* gr;
 PolygonData* soto;
 Movie* mov;
-PostEffect* blur, * mosa, * mblur;
+PostEffect* blur, * mosa, * mblur, *gau;
 Control* con;
-UserInterfaceMeter ui;
-UserInterfaceWindow wi;
+UserInterfaceMeter* ui;//new生成に変更※解放順の関係
+UserInterfaceWindow* wi;//new生成に変更※解放順の関係
+Dx_Bloom* bl;
 
-void testDxInput() {
-	Dx12Process::InstanceCreate();
-	dx = Dx12Process::GetInstance();
-	con = Control::GetInstance();
-	dx->dxrCreateResource();
-	dx->Initialize(hWnd, CURRWIDTH, CURRHEIGHT);
-	dx->setGlobalAmbientLight(0.0f, 0.0f, 0.0f);
-	DxText::InstanceCreate();
-	text = DxText::GetInstance();
-
-	DxInput* di = DxInput::GetInstance();
-	di->create(hWnd);
-	di->SetWindowMode(true);
-	di->setCorrectionX(1.015f);
-	di->setCorrectionY(1.055f);
-	int keyCnt = 0;
-	while (1) {
-		T_float::GetTime(hWnd);
-		T_float::GetTimeUp(hWnd);
-		if (!DispatchMSG(&msg)) {
-			break;
-		}
-		Directionkey key = con->Direction();
-		if(key != NOTPRESS)keyCnt++;
-		DxText::GetInstance()->UpDateValue(keyCnt, 10, 400, 30.0f, 5, { 0.3f, 1.0f, 0.3f, 1.0f });
-		Directionkey key2 = con->Direction();
-		int i = key;
-		int i2 = key2;
-		i = di->checkKeyDownNo();
-		i2 = di->checkKeyActionNo();
-		DxText::GetInstance()->UpDateValue(i, 400, 400, 30.0f, 5, { 0.3f, 1.0f, 0.3f, 1.0f });
-		DxText::GetInstance()->UpDateValue(i2, 400, 450, 30.0f, 5, { 1.0f, 1.0f, 1.0f, 1.0f });
-		int m = 0;
-		int m2 = 0;
-		if (di->isLAction())m = 1;
-		if (di->isMAction())m = 2;
-		if (di->isRAction())m = 3;
-		if (di->isLDown())m2 = 1;
-		if (di->isMDown())m2 = 2;
-		if (di->isRDown())m2 = 3;
-		DxText::GetInstance()->
-			UpDateValue(m, di->PosX(), di->PosY(), 30.0f, 1, { 1.0f, 1.0f, 1.0f, 1.0f });
-		DxText::GetInstance()->
-			UpDateValue(m2, di->PosX(), di->PosY() + 30.0f, 30.0f, 1, { 1.0f, 1.0f, 1.0f, 1.0f });
-
-		DxText::GetInstance()->
-			UpDateValue(di->PosX(), 100, 100, 30.0f, 1, { 1.0f, 1.0f, 1.0f, 1.0f });
-		DxText::GetInstance()->
-			UpDateValue(di->PosY(), 100, 130, 30.0f, 1, { 1.0f, 1.0f, 1.0f, 1.0f });
-		DxText::GetInstance()->UpDate();
-
-		dx->Bigin(0);
-		dx->BiginDraw(0, true);
-		text->Draw(0);
-		dx->EndDraw(0);
-		dx->End(0);
-		dx->RunGpu();
-		dx->WaitFence();
-		dx->DrawScreen();
-		Sleep(30);
-	}
-
-	DxInput::DeleteInstance();
-	Control::DeleteInstance();
-	DxText::DeleteInstance();
-	Dx12Process::DeleteInstance();
-}
+static float BloomStrength = 0.0f;
+static float ThresholdLuminance = 0.0f;
+static float BloomStrength2 = 0.0f;
+static float ThresholdLuminance2 = 0.0f;
+static float BloomStrength3 = 0.0f;
+static float ThresholdLuminance3 = 0.0f;
 
 int loop = 0;
 
 #include <vector>
 #include <memory>
 
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
-
-	srand((unsigned)time(NULL));
-
-	if (Createwindow(&hWnd, hInstance, nCmdShow, CURRWIDTH, CURRHEIGHT, L"DirectX_Test") == -1)return FALSE;
-
-	//testDxInput(); return 0;
-
-	//DirectX12ラッパー
-	Dx12Process::InstanceCreate();
-	dx = Dx12Process::GetInstance();
-	con = Control::GetInstance();
-	dx->dxrCreateResource();
-	dx->setPerspectiveFov(45, 0, 300);
-	dx->setNumResourceBarrier(1024);
-	dx->Initialize(hWnd, CURRWIDTH, CURRHEIGHT);
-	dx->setGlobalAmbientLight(0.01f, 0.01f, 0.01f);
-	DxInput* di = DxInput::GetInstance();
-	di->create(hWnd);
-	di->SetWindowMode(true);
-	ui.setNumMeter(8);
-	wi.setNumWindow(1);
-	di->setCorrectionX(1.015f);
-	di->setCorrectionY(1.055f);
-
+void createTexture(Dx12Process* dx) {
 	SearchFile* sf = new SearchFile(2);
 	char** strE = new char* [2];
 	strE[0] = "jpg";
@@ -316,6 +135,134 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			ARR_DELETE(byte);
 		}
 	}
+	S_DELETE(sf);
+}
+
+void createTexture2(Dx12Process* dx) {
+	SearchFile* sf = new SearchFile(2);
+	char** strE = new char* [2];
+	strE[0] = "jpg";
+	strE[1] = "png";
+	char** strE1 = new char* [1];
+	strE1[0] = "tif";
+	sf->Search(L"./tex/*", 0, strE, 2);
+	sf->Search(L"../../../19496_open3dmodel/open3dmodel.com/Models_E0504A019/*", 1, strE, 2);
+	UINT numFile1 = sf->GetFileNum(0);
+	UINT numFile2 = sf->GetFileNum(1);
+	InputParameter* ip = new InputParameter[numFile1 + numFile2];
+	
+	ARR_DELETE(strE);
+	int cnt = 0;
+	for (int k = 0; k < 2; k++) {
+		for (int i = 0; i < sf->GetFileNum(k); i++) {
+			char* str = sf->GetFileName(k, i);
+			ip[cnt].width = 512;
+			ip[cnt].height = 512;
+			ip[cnt].format = DXGI_FORMAT_R8G8B8A8_UNORM;
+			ip[cnt++].setFileName(str);
+		}
+	}
+	ID3D12Device* device = Dx_Device::GetInstance()->getDevice();
+	std::unique_ptr<OutputResource[]> R = DStorage::Load(device, ip, numFile1 + numFile2);
+	DStorage::Delete();
+
+	for (int i = 0; i < numFile1 + numFile2; i++) {
+		dx->createTextureArr(numFile1 + numFile2, i, Dx_Util::GetNameFromPass(ip[i].getFileName()),
+			R[i].Subresource, ip[i].format,
+			ip[i].width, ip[i].width * 4, ip[i].height, R[i].Texture);
+	}
+
+	ARR_DELETE(ip);
+	S_DELETE(sf);
+}
+
+static void sort(int* srcArr, int srcSize) {
+
+	//ソートする配列を分割
+	int topSize = (int)(srcSize * 0.5f);
+	int halfSize = srcSize - topSize;
+	int* topArr = new int[topSize];
+	int* halfArr = new int[halfSize];
+	memcpy(topArr, srcArr, topSize * sizeof(int));
+	memcpy(halfArr, &srcArr[topSize], halfSize * sizeof(int));
+
+	//要素1になるまで再帰
+	if (topSize > 1)sort(topArr, topSize);
+	if (halfSize > 1)sort(halfArr, halfSize);
+
+	int topIndex = 0;
+	int halfIndex = 0;
+	int srcIndex = 0;
+	//分割した配列の比較
+	//それぞれの配列は整列済みの為, 先頭から比較するだけ
+	for (int i = 0; i < srcSize; i++) {
+		if (topArr[topIndex] > halfArr[halfIndex]) {
+			srcArr[i] = topArr[topIndex++];
+			if (topSize <= topIndex) {
+				srcIndex = i + 1;
+				break;
+			}
+		}
+		else {
+			srcArr[i] = halfArr[halfIndex++];
+			if (halfSize <= halfIndex) {
+				srcIndex = i + 1;
+				break;
+			}
+		}
+	}
+
+	//余った要素を格納
+	if (topSize > topIndex) {
+		for (int i = srcIndex; i < srcSize; i++) {
+			srcArr[i] = topArr[topIndex++];
+		}
+	}
+	if (halfSize > halfIndex) {
+		for (int i = srcIndex; i < srcSize; i++) {
+			srcArr[i] = halfArr[halfIndex++];
+		}
+	}
+
+	delete[] topArr;
+	delete[] halfArr;
+}
+
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+
+	srand((unsigned)time(NULL));
+
+	if (Createwindow(&hWnd, hInstance, nCmdShow, CURRWIDTH, CURRHEIGHT, L"DirectX_Test") == -1)return FALSE;
+
+	//DirectX12ラッパー
+	Dx_Device::InstanceCreate();
+	Dx_Device::GetInstance()->createDevice();
+	Dx_Device::GetInstance()->reportLiveDeviceObjectsOn();
+	Dx_CommandManager::InstanceCreate();
+
+	Dx12Process::InstanceCreate();
+	dx = Dx12Process::GetInstance();
+	con = Control::GetInstance();
+	dx->dxrCreateResource();
+	dx->setPerspectiveFov(45, 0, 300);
+	Dx_CommandManager::setNumResourceBarrier(1024);
+	
+	dx->Initialize(hWnd, CURRWIDTH, CURRHEIGHT);
+	
+	//dx->wireFrameTest(true);
+	//dx->NorTestOn();
+	dx->setGlobalAmbientLight(0.0000f, 0.0000f, 0.0000f);
+	DxInput* di = DxInput::GetInstance();
+	di->create(hWnd);
+	di->SetWindowMode(true);
+	ui = new UserInterfaceMeter();
+	wi = new UserInterfaceWindow();
+	ui->setNumMeter(14);
+	wi->setNumWindow(1);
+	di->setCorrectionX(1.015f);
+	di->setCorrectionY(1.055f);
+
+	createTexture2(dx);
 
 	//文字入力
 	DxText::InstanceCreate();
@@ -324,10 +271,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	blur = new PostEffect();
 	mosa = new PostEffect();
 	mblur = new PostEffect();
+	gau = new PostEffect();
 
 	pd = new PolygonData[numPolygon];
+	pdbl = new PolygonData[2];
+
 	sk = new SkinMesh();
-	sk1 = new SkinMesh();
+	sk1 = new SkinObj();
 	md = new MeshData();
 	p = new ParticleData();
 	bil = new ParticleData();
@@ -337,11 +287,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	DivideArr arr[3];
 	arr[0].distance = 90.0f;
-	arr[0].divide = 2;//頂点数 3 → 3 * 6 = 18
+	arr[0].divide = 16;//頂点数 3 → 3 * 6 = 18
 	arr[1].distance = 50.0f;
-	arr[1].divide = 48;//頂点数 3 → 3 * 3456 = 10368
+	arr[1].divide = 32;//頂点数 3 → 3 * 3456 = 10368
 	arr[2].distance = 36.0f;
-	arr[2].divide = 96;//頂点数 3 → 3 * 13824 = 41472
+	arr[2].divide = 64;//頂点数 3 → 3 * 13824 = 41472
 
 	DivideArr arrsk[3];
 	arrsk[0].distance = 90.0f;
@@ -351,10 +301,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	arrsk[2].distance = 36.0f;
 	arrsk[2].divide = 1;
 
+	DivideArr arrWv[3];
+	arrWv[0].distance = 1000.0f;
+	arrWv[0].divide = 64;//頂点数 3 → 3 * 6 = 18
+	arrWv[1].distance = 50.0f;
+	arrWv[1].divide = 64;
+	arrWv[2].distance = 36.0f;
+	arrWv[2].divide = 64;
+
+	wav->setDivideArr(arrWv, 3);
 	md->setDivideArr(arrsk, 3);
 	sk->setDivideArr(arrsk, 3);
 	gr->setDivideArr(arr, 3);
 	pd[0].setDivideArr(arr, 3);
+	pd[3].setDivideArr(arr, 3);
 
 	p->GetBufferParticle(dx->GetTexNumber("boss_magic.png"), 0.1f, 5.0f);
 	bil->GetBufferBill(2);
@@ -362,20 +322,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	bil->SetVertex(1, { -50,0,18 });
 	bil->TextureInit(256, 256);
 
-	wav->SetCommandList(0);
-	wav->GetVBarray(1);
-	wav->SetVertex(ver24aa, 24, &index36[30], 6);
-
-	gr->GetVBarray(CONTROL_POINT, 1);
-	gr->setVertex(ver24aa, 24, &index36[30], 6);
-
-	md->SetCommandList(0);
 	md->SetState(true, false, false);
 	md->GetBuffer("mesh/tree.obj", 2);
 	md->SetVertex();
 
-
-	sk->SetCommandList(0);
 	sk->SetState(false, false);
 	//sk->ObjOffset(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0);
 	//sk->GetFbx("mesh/player2_fbx_att.fbx");
@@ -388,134 +338,159 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//HRESULT hr = sk->GetFbx("../../../Alien/Test_Alien-Animal-Blender_2.81.fbx");
 	//HRESULT hr = sk->GetFbx("../../../boss1bone.fbx");
 
-	sk->GetBuffer(1,3200.0f,false);
+	sk->GetBuffer(1, 3200.0f, false);
 	//sk->noUseMeshIndex(0);
-	sk->SetVertex(true,true);
-
-
-
-	sk1->SetCommandList(0);
-	sk1->SetState(true, true, 0.0f, 0.0f);
-	//sk1->ObjOffset(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0);
-	sk1->GetFbx("mesh/player1_fbx_att.fbx");
-	//sk1->GetFbx("../../../53394507/untitled4.fbx");
-	//sk1->GetFbx("../../../53394507/untitled.fbx");
-	//sk1->GetFbx("../../../53394507/53394507_bldg_6677.fbx");
-	sk1->GetBuffer(2,2900.0f,false);
-	sk1->SetVertex(true,true);
-
+	sk->SetVertex(true, true);
 
 	pd[0].GetVBarray(CONTROL_POINT, 1);
 	pd[1].GetVBarray(SQUARE, 3);
-	pd[2].GetVBarray(SQUARE, 2);
-	pd[3].GetVBarray(SQUARE, 1);
+	pdbl[0].GetVBarray(SQUARE, 1);
+	pdbl[1].GetVBarray(SQUARE, 1);
+	pd[2].GetVBarray(SQUARE, 1);
+	pd[3].GetVBarray(CONTROL_POINT, 1);
 
-	VECTOR3 v3[] = { {},{2,0,0},{3,0,0} };
-	VECTOR3 v3s[] = { {1,1,1},{1,1,1},{1,1,1} };
+	VECTOR3 v3[] = { {} };
+	VECTOR3 v3s[] = { {1,1,1}};
 
-	Vertex* sv = (Vertex*)CreateGeometry::createSphere(10, 10, 3, v3, v3s,false);
-	unsigned int* svI = CreateGeometry::createSphereIndex(10, 10, 3);
-	
-	Vertex* v = (Vertex*)CreateGeometry::createCube(2, v3, v3s,false);
-	unsigned int* ind = CreateGeometry::createCubeIndex(2);
-	pd[0].setVertex(v, 24 * 2, ind, 36 * 2);
-	pd[1].setVertex(sv, 11 * 11 * 3, svI, 10 * 10 * 6 * 3);
-	pd[2].setVertex(ver24aa, sizeof(ver24aa) / sizeof(Vertex), index36, sizeof(index36) / sizeof(UINT));
-	pd[3].setVertex(ver24aa, sizeof(ver24aa) / sizeof(Vertex), index36, sizeof(index36) / sizeof(UINT));
+	Vertex* sv = (Vertex*)CreateGeometry::createSphere(10, 10, 1, v3, v3s, false);
+	unsigned int* svI = CreateGeometry::createSphereIndex(10, 10, 1);
+
+	Vertex* v = (Vertex*)CreateGeometry::createCube(1, v3, v3s, false);
+	Vertex* vRev = (Vertex*)CreateGeometry::createCube(1, v3, v3s, true);
+
+	unsigned int* ind = CreateGeometry::createCubeIndex(1);
+	pd[0].setVertex(v, 24 * 2, ind, 36);
+	pd[1].setVertex(sv, 11 * 11, svI, 10 * 10 * 6);
+	pdbl[0].setVertex(v, 24, ind, 36);
+	pdbl[1].setVertex(v, 24, ind, 36);
+	pd[2].setVertex(v, 24, ind, 36);
+	pd[3].setVertex(ver4, 4, index6, 6);
+
+	wav->GetVBarray(1);
+	//wav->SetVertex(v, 24, &ind[30], 6);
+	wav->SetVertex(ver4, 4, index6, 6);
+
+	gr->GetVBarray(CONTROL_POINT, 1);
+	gr->setVertex(v, 24, &ind[30], 6);
+
+	soto->GetVBarray(SQUARE, 1);
+	soto->setVertex(vRev, 24, ind, 36);
 
 	ARR_DELETE(sv);
 	ARR_DELETE(svI);
 	ARR_DELETE(v);
+	ARR_DELETE(vRev);
 	ARR_DELETE(ind);
 
-	soto->GetVBarray(SQUARE, 1);
-	soto->setVertex(ver24aaRev, sizeof(ver24aaRev) / sizeof(Vertex), index36Rev, sizeof(index36Rev) / sizeof(UINT));
+	Dx_CommandManager* cMa = Dx_CommandManager::GetInstance();
+	Dx_CommandListObj* cObj = cMa->getGraphicsComListObj(0);
 
-	dx->Bigin(0);
-	blur->ComCreateDepthOfField();
-	mosa->ComCreateMosaic();
-	mblur->ComCreateBlur();
-
-	p->CreateParticle(dx->GetTexNumber("leaf.png"), true, true);
+	cObj->Bigin();
+	blur->ComCreateDepthOfField(0);
+	mosa->ComCreateMosaic(0);
+	mblur->ComCreateBlur(0);
+	UINT gaSize[5] = {
+				//512,256,128,64,32,16,8
+				256,128,64,32,16
+	};
+	
+	p->CreateParticle(0,dx->GetTexNumber("leaf.png"), true, true);
 	bil->setMaterialType(EMISSIVE);
-	bil->CreateBillboard(true, true);
-	//dx->wireFrameTest(true);
-	md->CreateMesh();
+	bil->CreateBillboard(0,true, true);
+	md->CreateMesh(0);
 	//sk1->setMaterialType(TRANSLUCENCE);
-	sk1->CreateFromFBX();
-	sk->CreateFromFBX();
-	sk->setInternalAnimationIndex(0);
+	//sk1->setMaterialType(EMISSIVE,0,3);
+	//sk1->ObjCentering(true, 0);
+	sk1->create();
+	sk->CreateFromFBX(0);
 
-	sk1->setInternalAnimationIndex(0);
+	wav->SetCol(0.5f, 0.5f, 0.5f, 1, 1, 1);
+	wav->setMaterialType((MaterialType)(TRANSLUCENCE | METALLIC));
+	wav->Create(0,-1/*dx->GetTexNumber("maru.png")*//*dx->GetTexNumber("wave.jpg")*/, -1, true, true, 0.05f, 64.0f, true);
 
-	wav->setMaterialType(METALLIC);
-	wav->Create(dx->GetTexNumber("wave.jpg"), -1, true, true, 0.031f, 64.0f,true);
-
-	gr->Create(true, dx->GetTexNumber("ground3.jpg"),
+	//gr->setMaterialType(METALLIC);
+	gr->Create(0,true, dx->GetTexNumber("ground3.jpg"),
 		dx->GetTexNumber("ground3Nor.png"),
-		dx->GetTexNumber("ground3.jpg"), true, true);
+		dx->GetTexNumber("ground3.jpg"), true, true, true);
+	//gr->getParameter()->updateF = true;
 
-	pd[0].Create(true, dx->GetTexNumber("wall1.jpg"),
+	pd[0].Create(0,true, dx->GetTexNumber("wall1.jpg"),
 		dx->GetTexNumber("wall1Nor.png"),
-		dx->GetTexNumber("wall1.jpg"), false, false,false);
+		dx->GetTexNumber("wall1.jpg"), false, false, false);
 	pd[1].setMaterialType(METALLIC);
-	pd[1].Create(true, dx->GetTexNumber("ceiling5.jpg"), -1/*dx->GetTexNumber("ceiling5Nor.png")*/, -1, false, false);
-	pd[2].setMaterialType(EMISSIVE);
-	pd[2].Create(true, dx->GetTexNumber("siro.png"), -1, -1, false, false);
-	pd[3].Create(true, dx->GetTexNumber("boss_magic.png"), -1, -1, true, true);
+	pd[1].Create(0,true, dx->GetTexNumber("siro.png"), -1/*dx->GetTexNumber("ceiling5Nor.png")*/, -1, false, true);
+	pdbl[0].setMaterialType(EMISSIVE);
+	pdbl[0].Create(0,true, dx->GetTexNumber("siro.png"), -1, -1, false, false);
+	pdbl[1].setMaterialType(EMISSIVE);
+	pdbl[1].Create(0,true, dx->GetTexNumber("siro.png"), -1, -1, false, false);
+	pd[2].Create(0,true, dx->GetTexNumber("boss_magic.png"), -1, -1, true, true);
+	pd[3].setMaterialType(TRANSLUCENCE);
+	pd[3].Create(0,true, dx->GetTexNumber("siro.png"),dx->GetTexNumber("wall1Nor.png"),-1, false, false, false);
 
-	soto->setMaterialType(DIRECTIONLIGHT_NONREFLECTION);
-	soto->Create(true, dx->GetTexNumber("wall1.jpg"),
+	soto->setMaterialType((MaterialType)(DIRECTIONLIGHT | NONREFLECTION));
+	soto->Create(0,true, dx->GetTexNumber("wall1.jpg"),
 		dx->GetTexNumber("wall1Nor.png"),
 		dx->GetTexNumber("wall1.jpg"), false, false);
-
-	ui.create(0, 200, 50, "mesh1");
-	ui.create(1, 200, 50, "cam");
-	ui.create(2, 200, 50, "light0");
-	ui.create(3, 200, 50, "light1");
-	ui.create(4, 200, 50, "light2");
-	ui.create(5, 200, 50, "light3");
-	ui.create(6, 200, 50, "TMin");
-	ui.create(7, 200, 50, "TMax");
-	wi.create(0, 15);
+	
+	ui->create(0, 200, 50, "smoothRange");
+	ui->create(1, 200, 50, "cam");
+	ui->create(2, 200, 50, "light0");
+	ui->create(3, 200, 50, "light1");
+	ui->create(4, 200, 50, "light2");
+	ui->create(5, 200, 50, "light3");
+	ui->create(6, 200, 50, "TMin");
+	ui->create(7, 200, 50, "TMax");
+	ui->create(8, 200, 50, "ブルーム強さ");
+	ui->create(9, 200, 50, "輝度閾値");
+	ui->create(10, 200, 50, "ブルーム強さ2");
+	ui->create(11, 200, 50, "輝度閾値2");
+	ui->create(12, 200, 50, "ブルーム強さ3");
+	ui->create(13, 200, 50, "輝度閾値3");
+	wi->create(0, 15);
 	char* str[4];
 	char* st0 = "レイトレON";
 	char* st1 = "レイトレOFF";
 
 	str[0] = st0;
 	str[1] = st1;
-	wi.setMenuName(0, 2, str);
+	wi->setMenuName(0, 2, str);
 
-	dx->End(0);
-	dx->RunGpu();
-	dx->WaitFence();
+	cObj->End();
+	cMa->RunGpu();
+	cMa->WaitFence();
 
 	int numMesh = sk->getNumMesh();
-	int numMesh1 = sk1->getNumMesh();
-	int numMaterial = 0;
-	int numMaterial1 = 0;
-	UINT numMT = numPolygon + numMesh + numMesh1 + 5;
-
-	ParameterDXR** pdx = new ParameterDXR * [numMT];
+	int numMesh1 = sk1->getNumParameterDXR();
 	
-	for (int i = 0; i < numPolygon; i++)
-		pdx[i] = pd[i].getParameter();
-	for (int i = numPolygon; i < numMesh + numPolygon; i++) {
-		pdx[i] = sk->getParameter(i - numPolygon);
-		numMaterial += pdx[i]->NumMaterial;
-	}
-	for (int i = numMesh + numPolygon; i < numMesh + numPolygon + numMesh1; i++) {
-		pdx[i] = sk1->getParameter(i - (numMesh + numPolygon));
-		numMaterial1 += pdx[i]->NumMaterial;
-	}
-	pdx[numMesh + numPolygon + numMesh1] = md->getParameter();
-	pdx[numMesh + numPolygon + numMesh1 + 1] = wav->getParameter();
-	pdx[numMesh + numPolygon + numMesh1 + 2] = bil->getParameter();
-	pdx[numMesh + numPolygon + numMesh1 + 3] = gr->getParameter();
-	pdx[numMesh + numPolygon + numMesh1 + 4] = soto->getParameter();
+	std::vector<ParameterDXR*> pdx;
 
-	dxr = new DXR_Basic();
-	dxr->initDXR(numMT, pdx, 10);
+	for (int i = 0; i < numPolygon; i++)
+		pdx.push_back(pd[i].getParameter());
+	for (int i = 0; i < numMesh; i++) {
+		pdx.push_back(sk->getParameter(i));
+	}
+	for (int i = 0; i < numMesh1; i++) {
+		pdx.push_back(sk1->getParameterDXR(i));
+	}
+	pdx.push_back(md->getParameter());
+	pdx.push_back(wav->getParameter());
+	pdx.push_back(bil->getParameter());
+	pdx.push_back(gr->getParameter());
+	pdx.push_back(soto->getParameter());
+	pdx.push_back(pdbl[0].getParameter());
+	pdx.push_back(pdbl[1].getParameter());
+	dxr = new DxrRenderer();
+	dxr->initDXR(pdx, 10);
+	bl = new Dx_Bloom();
+	std::vector<std::vector<uint32_t>> gausu = {
+		{128, 32},
+		{128, 32,8},
+		{128,32,8}
+	};
+	std::vector<float> sigma = { 10,15,12 };
+	std::vector<Dx_Bloom::GaussianType> type = { Dx_Bloom::GaussianType::Type1D, Dx_Bloom::GaussianType::Type1D, Dx_Bloom::GaussianType::Type1D };
+
+	bl->Create(0,3,dxr->getInstanceIdMap(),&sigma,&gausu,&type);
 
 	eff[0] = false;
 	eff[1] = false;
@@ -534,49 +509,56 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		T_float::GetTime(hWnd);
 		T_float::GetTimeUp(hWnd);
 		MATRIX camThetaZ;
-		VECTOR3 cam1 = { 0, -70, 10 };
+		VECTOR3 cam1 = { 0, -90, 10 };
 		MatrixRotationZ(&camThetaZ, camTheta * 360.0f);
 		VectorMatrixMultiply(&cam1, &camThetaZ);
-		
-		dx->Bigin(0);
+
+		cObj->Bigin();
 		bil->SetTextureMPixel(0, mov->GetFrame(256, 256, 50));
-		dx->End(0);
+		cObj->End();
 
 		dxr->allSwapIndex();
 
 		dx->Cameraset({ cam1.x, cam1.y, cam1.z }, { 0, 0, 0 });
-		
+		//グラフィックスドライバ更新した後当たりからマルチスレッドでフリーズする現象有り？ → 大丈夫になった・・
+		//update();
+		//draw();
+		//AS();
+		//raytrace();
 		th.wait();
 
-		if (!rayF123) {
-			dx->RunGpu();
-			dx->WaitFence();
-		}
-		else {
-			dx->RunGpuCom();
-			dx->RunGpu();
-			dx->WaitFenceCom();
-			dx->WaitFence();
+		//ラスタ
+		cMa->RunGpu();
+		cMa->WaitFence();
+
+		Dx_CommandListObj* cObj4 = cMa->getGraphicsComListObj(4);
+		if (rayF123) {
+			//レイトレ
+			cMa->RunGpuCom();
+			cMa->RunGpu();
+			cMa->WaitFenceCom();
+			cMa->WaitFence();
 			UpdateDxrDivideBuffer();
 
-			dx->Bigin(4);
+			cObj4->Bigin();
 			dxr->copyBackBuffer(4);
 			dxr->copyDepthBuffer(4);
-			dx->End(4);
-			dx->RunGpu();
-			dx->WaitFence();
+			cObj4->End();
+			cMa->RunGpu();
+			cMa->WaitFence();
 		}
 
-		dx->Bigin(4);
+		cObj4->Bigin();
 		dx->BiginDraw(4, false);
-		p->Draw(4);
+		//p->Draw(4);
 		dx->EndDraw(4);
-		dx->End(4);
-		dx->RunGpu();
-		dx->WaitFence();
+		cObj4->End();
+		cMa->RunGpu();
+		cMa->WaitFence();
 
-		dx->Bigin(4);
+		cObj4->Bigin();
 		dx->BiginDraw(4, false);
+
 		if (loop > 0) {
 			if (eff[0])blur->ComputeDepthOfField(4, true, 500, 0.98f, 0.00f);
 			else blur->ComputeDepthOfField(4, false, 500, 0.98f, 0.00f);
@@ -584,32 +566,57 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			else mblur->ComputeBlur(4, false, 400, 400, 0.1f);
 		}
 		if (loop > 10000)loop = 3;
-		if (eff[1])mosa->ComputeMosaic(4, true, 10);
-		else mosa->ComputeMosaic(4, false, 10);
-		dx->EndDraw(4);
-		dx->End(4);
-		dx->RunGpu();
-		dx->WaitFence();
+		//if (eff[1])mosa->ComputeMosaic(4, true, 10);
+		//else mosa->ComputeMosaic(4, false, 10);
 
-		dx->Bigin(4);
+
+
+		dx->EndDraw(4);
+		cObj4->End();
+		cMa->RunGpu();
+		cMa->WaitFence();
+
+		if (rayF123) {
+			Dx_Bloom::InstanceParam pa1 = {};
+			pa1.bloomStrength = BloomStrength;
+			pa1.EmissiveInstanceId = pdx.size() - 5 + 3;
+			pa1.thresholdLuminance = ThresholdLuminance;
+			Dx_Bloom::InstanceParam pa2 = {};
+			pa2.bloomStrength = BloomStrength2;
+			pa2.EmissiveInstanceId = pdx.size() - 2 + 3;
+			pa2.thresholdLuminance = ThresholdLuminance2;
+			Dx_Bloom::InstanceParam pa3 = {};
+			pa3.bloomStrength = BloomStrength3;
+			pa3.EmissiveInstanceId = pdx.size() - 1 + 3;
+			pa3.thresholdLuminance = ThresholdLuminance3;
+
+			std::vector<Dx_Bloom::InstanceParam>pa = { pa1,pa2,pa3};
+
+			bl->Compute(4, pa, dx->GetRtBuffer());
+		}
+
+		cObj4->Bigin();
 		dx->BiginDraw(4, false);
-		for (int i = 0; i < 8; i++)
-			ui.Draw(i, 4);
-		wi.Draw(0, 4);
+		
+		for (int i = 0; i < 14; i++)
+			ui->Draw(i, 4);
+		wi->Draw(0, 4);
 		text->Draw(4);
 		dx->EndDraw(4);
-		dx->End(4);
-		dx->RunGpu();
-		dx->WaitFence();
+		cObj4->End();
+		cMa->RunGpu();
+		cMa->WaitFence();
 		dx->DrawScreen();
 		loop++;
 	}
 	th.end();
 
-	dx->WaitFence();
-	dx->WaitFenceCom();
+	cMa->WaitFence();
+	cMa->WaitFenceCom();
+	S_DELETE(wi);
+	S_DELETE(ui);
+	S_DELETE(bl);
 	S_DELETE(gr);
-	S_DELETE(sf);
 	S_DELETE(md);
 	S_DELETE(p);
 	S_DELETE(bil);
@@ -618,33 +625,37 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	S_DELETE(blur);
 	S_DELETE(mosa);
 	S_DELETE(mblur);
+	S_DELETE(gau);
 	S_DELETE(soto);
 	S_DELETE(sk);
 	S_DELETE(sk1);
 	ARR_DELETE(pd);
-	ARR_DELETE(pdx);
+	ARR_DELETE(pdbl);
 	S_DELETE(dxr);
 	DxInput::DeleteInstance();
 	Control::DeleteInstance();
 	DxText::DeleteInstance();
 	Dx12Process::DeleteInstance();
+	Dx_CommandManager::DeleteInstance();
+	Dx_Device::DeleteInstance();
 	return 0;
 }
 
 static bool d = true;
 
 void update() {
+	
 	Directionkey key = con->Direction();
 	if (key == UP)d = !d;
-	if (key == DOWN)eff[0] = !eff[0];//ぼかし
-	if (key == LEFT)eff[2] = !eff[2];
-	//if (key == ENTER)eff[3] = !eff[3];//Ctrl
+	if (key == DOWN)eff[0] = !eff[0];//被写界深度
+	if (key == LEFT)eff[1] = !eff[1];//bloom
+	//if (key == ENTER)eff[1] = !eff[1];//Ctrl
 	if (key == CANCEL)dlight = !dlight;//Delete
-	if (key == RIGHT)eff[3] = !eff[3];
+	if (key == RIGHT)eff[3] = !eff[3];//ブラー
 
 	dx->SetDirectionLight(dlight);
 	dx->DirectionLight(0.4f, 0.4f, -1.0f, 0.1f, 0.1f, 0.1f);
-	float th = tfloat.Add(0.15f);
+	float th = tfloat.Add(0.05f);
 	theta = theta += th;
 	if (theta > 360)theta = 0;
 	MATRIX thetaZ;
@@ -667,7 +678,7 @@ void update() {
 	dx->PointLightPosSet(lightCnt++,
 		{ -14, 0, 5 },
 		{ 1, 1, 1, 1 }, true, 1000, { 0.1f,light[3],0.000f });
-
+		
 	float th1 = tfloat.Add(0.05f);
 
 	thetaO = thetaO += th1;
@@ -677,54 +688,55 @@ void update() {
 	if (insCnt > 1100) {
 		insCnt = 0;
 	}
-
-	pd[0].Instancing({ (float)35, 0, 20 },
+	
+	pd[0].Instancing({ (float)0, 0, 30 },
 		{ 0, 0, thetaO },
 		{ 7, 7, 7 }, { 0, 0, 0, 0 });
 	pd[0].InstancingUpdate(
-		1,
+		0.2f,
+		0.2f,
 		4.0f);
-	float r = (float)(rand() % 11) * 0.1f;
-	float g = (float)(rand() % 11) * 0.1f;
-	float b1 = (float)(rand() % 11) * 0.1f;
-	
-	for (int b = 0; b < 3; b++) {
-		pd[1].Instancing({ (float)-38, b * 10.0f, 25 },
-			{ 0, 0, thetaO },
-			{ 7, 7, 7 }, { -r, -g, -b1, 0 });
-	}
+
+	pd[1].Instancing({ (float)0, -3.0f, 15 },
+		{ 0, 0, thetaO },
+		{ 7, 7, 7 }, { 0, 0, 0, 0 });
 	pd[1].InstancingUpdate(
 		0,
 		4.0f);
 	pd[1].setRefractiveIndex(0.1f);
 
 
-	pd[2].Instancing({ light1.x, light1.y, light1.z },
+	pdbl[0].Instancing({ light1.x, light1.y, light1.z },
 		{ 0, 0, 0 },
 		{ 1, 1, 1 }, { 0, 0, 0, 0 });
+	pdbl[0].InstancingUpdate(
+		0,
+		4.0f);
+	pdbl[1].Instancing({ light2.x, light2.y, light2.z },
+		{ 0, 0, 0 },
+		{ 1, 1, 1 }, { 0, 0, 0, 0 });
+	pdbl[1].InstancingUpdate(
+		0,
+		4.0f);
+	pdbl[0].setPointLight(0, true, 1000, { 0.5f,light[0],0.000f });
+	pdbl[1].setPointLight(0, true, 1000, { 0.5f,light[1],0.000f });
 
-	pd[2].Instancing({ light2.x, light2.y, light2.z },
-		{ 0, 0, 0 },
-		{ 1, 1, 1 }, { 0, 0, 0, 0 });
+	pd[2].Instancing({ 0, 0, 15 },
+		{ 0, 0, thetaO },
+		{ 4, 4, 4 }, { 0, 0, 0, 0 });
 	pd[2].InstancingUpdate(
 		0,
 		4.0f);
 
-	pd[3].Instancing({ 0, 0, 15 },
-		{ 0, 0, thetaO },
-		{ 4, 4, 4 }, { 0, 0, 0, 0 });
+	pd[3].Instancing({ 0, -20, 8 },
+		{ 90, 0, 0 },
+		{ 10, 10, 10 }, { 0, 0, 0, -0.4f });
 	pd[3].InstancingUpdate(
 		0,
 		4.0f);
+	pd[3].setRefractiveIndex(0.1f);
 
 	float m = tfloat.Add(1.0f);
-
-	
-	/*sk->Update(0, m,
-		{ 10, 0, 0 },
-		{ 0, 0, 0, 0 },
-		{ 0, 0, 0 },
-		{ 0.005f,0.005f,0.005f });*/
 
 	sk->Update(0, m,
 		{ 2, -5, 0 },
@@ -732,56 +744,45 @@ void update() {
 		{ 90, 0, 0 },
 		{ 0.2f,0.2f,0.2f });
 
-	/*sk->Update(0, m,
-		{ 5, 0, 0 },
-		{ 0, 0, 0, 0 },
-		{ 0, 0, 0 },
-		{ 1.6f,1.6f,1.6f });*/
 	sk->setAllRefractiveIndex(0.1f);
-	//}
-	//else sk->DrawOff();
+	
+	static float Refractive = 0.3f;
+	sk1->update();
 
-	static float Refractive = 0.0f;
-	for (int i = 0; i < 2; i++) {
-		sk1->Instancing({ (float)-20+i*15.0f, 0, 0 },
-			{ 0, 0, 0, -0.00f },
-			{ -90, 0, 0 },
-			{ 1.6f,1.6f,1.6f });
-	}
-	sk1->InstancingUpdate(0, m);
-	/*sk1->Update(0, m,
-		{ -20, 0, 0 },
-		{ 0, 0, 0, -0.00f },
-		{-90, 0, 0 },
-		{ 1.6f,1.6f,1.6f });*/
-	sk1->setAllRefractiveIndex(Refractive);
-
-	md->Instancing({ 0, 0, -10 },
+	md->Instancing({ 10, 0, 10 },
 		{ 0, 0, 0 },
 		{ 1,1,1 }, { 0, 0, 0, 0 });
-	md->Instancing({ 0, 0, 30 },
+	/*md->Instancing({0, 0, 30},
 		{ 0, 0, 0 },
-		{ 1,1,1 }, { 0, 0, 0, 0 });
+		{ 1,1,1 }, { 0, 0, 0, 0 });*/
 	md->InstancingUpdate(
 		0, 4.0);
 
-	float m2 = tfloat.Add(0.003f);
+	static float smoothRange = 0.0f;
+	float m2 = tfloat.Add(0.03f);
+	m2 = 1.1f;//波紋
+	
 	if (d) {
-		wav->Instancing(m2, { 0, 0, -20 },
-			{ 0,0,0 },
-			{ 60, 60, 15 }, { 0, 0, 0, -0.1f });
-		wav->InstancingUpdate(
-			0.0000f, 4.0f);
+		wav->Instancing({ 0, 0, -20 },
+			{ 0,0,thetaO },
+			{ 60, 60, 15 }, { 0, 0, 0, -0.2f });
+		wav->InstancingUpdate(1, m2,
+			0.0f, smoothRange, 32, 32, 0.7f);
 	}
 	else wav->DrawOff();
+	wav->setRefractiveIndex(0.1f);
 
 	gr->Instancing({ 0, 0, -28 },
 		{ 0, 0, 0 },
 		{ 60, 60, 15 }, { 0, 0, 0, 0 });
 
+	static float px = 0.0f;
+	static float py = 0.0f;
+	static float u_num = 0.0f;
+	static float v_num = 0.0f;
+
 	gr->InstancingUpdate(
-		0.01f,
-		1.0f);
+		0.0f, 0.1f, 1.0f, 4.0f);
 
 	soto->Instancing({ 0, 0, 0 },
 		{ 0, 0, 0 },
@@ -799,8 +800,10 @@ void update() {
 	if (1) {
 		p->Update({ 0,0,5 }, { 0,0,0 }, 0, 0.1f, parSwich, sp);
 		parSwich = false;
-		//bil->Update(10.0f, { 0,0,0,-0.3f });
-		bil->Update({5,0,0}, { 0,0,0,-0.3f }, 50, 10.0f, false, 0);
+		
+		bil->Update({ 5,0,0 }, { 0,0,0,-0.3f }, 50, 10.0f, false, 0);
+		bil->setPointLight(0, true, 1000, { 0.5f,light[2],0.000f });
+		bil->setPointLight(1, true, 1000, { 0.5f,light[3],0.000f });
 	}
 	else {
 		p->DrawOff();
@@ -809,38 +812,53 @@ void update() {
 
 	static bool uiF = false;
 	if (!uiF) {
-		ui.updatePos(0, 1, 1, 0, 0);
-		ui.updatePos(1, 822, 716, 0, 0);
-		ui.updatePos(2, 1, 100, 0, 0);
-		ui.updatePos(3, 1, 200, 0, 0);
-		ui.updatePos(4, 1, 300, 0, 0);
-		ui.updatePos(5, 1, 400, 0, 0);
-		ui.updatePos(6, 1, 500, 0, 0);
-		ui.updatePos(7, 1, 600, 0, 0);
+		
+		ui->updatePos(0, 1, 1, 0, 0);
+		ui->updatePos(1, 822, 716, 0, 0);
+		ui->updatePos(2, 1, 100, 0, 0);
+		ui->updatePos(3, 1, 200, 0, 0);
+		ui->updatePos(4, 1, 300, 0, 0);
+		ui->updatePos(5, 1, 400, 0, 0);
+		ui->updatePos(6, 1, 500, 0, 0);
+		ui->updatePos(7, 1, 600, 0, 0);
+		ui->updatePos(8, 822, 1, 0, 0);
+		ui->updatePos(9, 822, 100, 0, 0);
+		ui->updatePos(10, 822, 200, 0, 0);
+		ui->updatePos(11, 822, 300, 0, 0);
+		ui->updatePos(12, 822, 400, 0, 0);
+		ui->updatePos(13, 822, 500, 0, 0);
+		
 		uiF = true;
 	}
 	else
 	{
-		Refractive = ui.updatePosMouse(0, 0.0f);
-		camTheta = ui.updatePosMouse(1, 0.0f);
-		light[0] = 1.0f - ui.updatePosMouse(2, 0.0f);
-		light[1] = 1.0f - ui.updatePosMouse(3, 0.0f);
-		light[2] = 1.0f - ui.updatePosMouse(4, 0.0f);
-		light[3] = 1.0f - ui.updatePosMouse(5, 0.0f);
-		float tMin = 0.001f + 200.0f * ui.updatePosMouse(6, 0.0f);
-		float tMax = 300.0f - 300.0f * ui.updatePosMouse(7, 0.0f);
+		smoothRange = ui->updatePosMouse(0, 0.0f);
+		camTheta = ui->updatePosMouse(1, 0.0f);
+		light[0] = 1.0f - ui->updatePosMouse(2, 0.0f);
+		light[1] = 1.0f - ui->updatePosMouse(3, 0.0f);
+		light[2] = 1.0f - ui->updatePosMouse(4, 0.0f);
+		light[3] = 1.0f - ui->updatePosMouse(5, 0.0f);
+		float tMin = 0.001f + 200.0f * ui->updatePosMouse(6, 0.0f);
+		float tMax = 300.0f - 300.0f * ui->updatePosMouse(7, 0.0f);
+		BloomStrength = ui->updatePosMouse(8, 0.0f) * 50.0f;
+		ThresholdLuminance = ui->updatePosMouse(9, 0.0f);
+		BloomStrength2 = ui->updatePosMouse(10, 0.0f) * 50.0f;
+		ThresholdLuminance2 = ui->updatePosMouse(11, 0.0f);
+		BloomStrength3 = ui->updatePosMouse(12, 0.0f) * 50.0f;
+		ThresholdLuminance3 = ui->updatePosMouse(13, 0.0f);
+		
 		dxr->setTMin_TMax(tMin, tMax);
 	}
-	int rF = wi.updatePos(0, 200, 100);
+	int rF = wi->updatePos(0, 200, 100);
 	if (rF == 0)rayF123 = true;
 	if (rF == 1)rayF123 = false;
 
 	if (!eff[1])
-		text->UpDateText(L"モザイクオフ", 185.0f, 60.0f, 30.0f, { 1.0f, 1.0f, 1.0f, 1.0f });
+		text->UpDateText(L"ブルームオフ", 185.0f, 60.0f, 30.0f, { 1.0f, 1.0f, 1.0f, 1.0f });
 	else
-		text->UpDateText(L"モザイクオン", 185.0f, 60.0f, 30.0f, { 1.0f, 0.0f, 0.0f, 1.0f });
+		text->UpDateText(L"ブルームオン", 185.0f, 60.0f, 30.0f, { 1.0f, 0.0f, 0.0f, 1.0f });
 	text->UpDate();
-
+	
 	if (Dx_Util::getErrorState()) {
 		int g = 0;
 	}
@@ -848,43 +866,52 @@ void update() {
 
 void draw() {
 	int com = 1;
-	if (rayF123 == false) {
-		dx->Bigin(com);
+	
+	Dx_CommandListObj* d = Dx_CommandManager::GetInstance()->getGraphicsComListObj(com);
+
+	d->Bigin();
+	if (!rayF123) {
 		dx->BiginDraw(com);
-		soto->Draw(com);
 		sk1->Draw(com);
-		pd[0].Draw(com);
+		pdbl[0].Draw(com);
+		pdbl[1].Draw(com);
+		soto->Draw(com);
 		pd[1].Draw(com);
 		pd[2].Draw(com);
-		pd[3].Draw(com);
 		md->Draw(com);
 		gr->Draw(com);
 		wav->Draw(com);
 		sk->Draw(com);
+		pd[0].Draw(com);
+		pd[3].Draw(com);
 		bil->DrawBillboard(com);
 		dx->EndDraw(com);
-		dx->End(com);
 	}
-	else {
-		dx->Bigin(com);
+	if (rayF123) {
+		
 		sk->StreamOutput(com);//update
 		sk1->StreamOutput(com);//update
 		bil->StreamOutputBillboard(com);//update
 		soto->StreamOutput(com);
 		pd[0].StreamOutput(com);//update
 		pd[1].StreamOutput(com);
+		pdbl[0].StreamOutput(com);
+		pdbl[1].StreamOutput(com);
 		pd[2].StreamOutput(com);
 		pd[3].StreamOutput(com);
 		md->StreamOutput(com);
 		gr->StreamOutput(com);//update
 		wav->StreamOutput(com);//update
-		dx->End(com);
+		d->End();
 	}
+	else {
+		d->End();
+	}
+	
 }
 
 void UpdateDxrDivideBuffer() {
 	sk->UpdateDxrDivideBuffer();
-	sk1->UpdateDxrDivideBuffer();
 	pd[0].UpdateDxrDivideBuffer();
 	wav->UpdateDxrDivideBuffer();
 	gr->UpdateDxrDivideBuffer();
@@ -893,17 +920,19 @@ void UpdateDxrDivideBuffer() {
 void AS() {
 	int com = 2;
 	if (rayF123) {
-		dx->Bigin(com);
+		Dx_CommandListObj* d = Dx_CommandManager::GetInstance()->getGraphicsComListObj(com);
+		d->Bigin();
 		dxr->update_g(com, 6);
-		dx->End(com);
+		d->End();
 	}
 }
 
 void raytrace() {
 	int com = 3;
 	if (rayF123) {
-		dx->BiginCom(com);
+		Dx_CommandListObj* d = Dx_CommandManager::GetInstance()->getComputeComListObj(com);
+		d->Bigin();
 		dxr->raytrace_c(com);
-		dx->EndCom(com);
+		d->End();
 	}
 }

@@ -82,6 +82,12 @@
     <Filter Include="Common\Direct3DWrapperOption\Shader">
       <UniqueIdentifier>{3ccec614-0475-4faa-b0b8-9a82ee8a18b5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Common\DIrectStorageWrapper">
+      <UniqueIdentifier>{c05470fa-523f-4951-bdb6-2e274c65776c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SkinObj">
+      <UniqueIdentifier>{660c10d8-4995-4829-9107-317758d907ec}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\FbxLoader\FbxLoader.cpp">
@@ -141,7 +147,7 @@
     <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_Device.cpp">
       <Filter>Common\Direct3DWrapper\DX_3DCG\Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\DXR_Basic.cpp">
+    <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\DxrRenderer.cpp">
       <Filter>Common\Direct3DWrapper\DX_3DCG\DXR</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx12ProcessCore.cpp">
@@ -194,6 +200,21 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Common\Direct3DWrapperOption\DxText.cpp">
       <Filter>Common\Direct3DWrapperOption</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Common\DIrectStorageWrapper\DStorage.cpp">
+      <Filter>Common\DIrectStorageWrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="SkinObj\SkinObj.cpp">
+      <Filter>SkinObj</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Common\Direct3DWrapperOption\Dx_Bloom.cpp">
+      <Filter>Common\Direct3DWrapperOption</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_Resource.cpp">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_CommandManager.cpp">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -257,16 +278,13 @@
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\DxStruct.h">
       <Filter>Common\Direct3DWrapper\DX_3DCG\Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR\ShaderBasicDXR.h">
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR\ShaderCommon.h">
       <Filter>Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR\ShaderCommonDXR.h">
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR\ShaderGlobalParameters.h">
       <Filter>Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR\ShaderParametersDXR.h">
-      <Filter>Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\DXR_Basic.h">
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\DxrRenderer.h">
       <Filter>Common\Direct3DWrapper\DX_3DCG\DXR</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_CommandListObj.h">
@@ -368,5 +386,50 @@
     <ClInclude Include="..\..\..\Common\Direct3DWrapperOption\DxText.h">
       <Filter>Common\Direct3DWrapperOption</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Common\DIrectStorageWrapper\DStorage.h">
+      <Filter>Common\DIrectStorageWrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="SkinObj\SkinObj.h">
+      <Filter>SkinObj</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapperOption\Shader\ShaderBloom.h">
+      <Filter>Common\Direct3DWrapperOption\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapperOption\Dx_Bloom.h">
+      <Filter>Common\Direct3DWrapperOption</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_Resource.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_CommandManager.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR\ShaderRayGen.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR\ShaderBasicHit.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR\ShaderEmissiveHit.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR\ShaderBasicMiss.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR\ShaderEmissiveMiss.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR\ShaderBasicAnyHit.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR\ShaderLocalParameters.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR\ShaderTraceRay.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
