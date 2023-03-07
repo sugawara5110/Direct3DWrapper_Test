@@ -1,6 +1,7 @@
 //////////////////////////////////////DirectXテスト/////////////////////////////////////////////////////////////
 
 #define _CRT_SECURE_NO_WARNINGS
+#include"../../../T_float/T_float.h"
 #include"../../../Common/Direct3DWrapper/Dx12Process.h"
 #include"../../../Common/Direct3DWrapperOption/DxText.h"
 #include"../../../Common/Direct3DWrapperOption/Dx_ParticleData.h"
@@ -59,7 +60,6 @@ bool dlight = true;
 //ウィンドウハンドル
 HWND hWnd;
 MSG msg;
-Dx12Process* dx;
 DxText* text;
 DxrRenderer* dxr;
 PolygonData* pd;
@@ -91,7 +91,7 @@ int loop = 0;
 #include <vector>
 #include <memory>
 
-void createTexture(Dx12Process* dx) {
+void createTexture(Dx_TextureHolder* dx) {
 	SearchFile* sf = new SearchFile(2);
 	char** strE = new char* [2];
 	strE[0] = "jpg";
@@ -138,7 +138,7 @@ void createTexture(Dx12Process* dx) {
 	S_DELETE(sf);
 }
 
-void createTexture2(Dx12Process* dx) {
+void createTexture2(Dx_TextureHolder* dx) {
 	SearchFile* sf = new SearchFile(2);
 	char** strE = new char* [2];
 	strE[0] = "jpg";
@@ -146,7 +146,8 @@ void createTexture2(Dx12Process* dx) {
 	char** strE1 = new char* [1];
 	strE1[0] = "tif";
 	sf->Search(L"./tex/*", 0, strE, 2);
-	sf->Search(L"../../../19496_open3dmodel/open3dmodel.com/Models_E0504A019/*", 1, strE, 2);
+	//sf->Search(L"../../../19496_open3dmodel/open3dmodel.com/Models_E0504A019/*", 1, strE, 2);
+	sf->Search(L"../../../Black Dragon NEW/textures/*", 1, strE, 2);
 	UINT numFile1 = sf->GetFileNum(0);
 	UINT numFile2 = sf->GetFileNum(1);
 	InputParameter* ip = new InputParameter[numFile1 + numFile2];
@@ -239,19 +240,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Dx_Device::GetInstance()->createDevice();
 	Dx_Device::GetInstance()->reportLiveDeviceObjectsOn();
 	Dx_CommandManager::InstanceCreate();
+	Dx_SwapChain::InstanceCreate();
 
-	Dx12Process::InstanceCreate();
-	dx = Dx12Process::GetInstance();
+	Dx_TextureHolder::InstanceCreate();
+	Dx_TextureHolder* dx = Dx_TextureHolder::GetInstance();
 	con = Control::GetInstance();
-	dx->dxrCreateResource();
-	dx->setPerspectiveFov(45, 0, 300);
+	Dx_Device* dev = Dx_Device::GetInstance();
+	dev->dxrCreateResource();
+	Dx_SwapChain* sw = Dx_SwapChain::GetInstance();
+	
 	Dx_CommandManager::setNumResourceBarrier(1024);
 	
-	dx->Initialize(hWnd, CURRWIDTH, CURRHEIGHT);
-	
+	sw->Initialize(hWnd, CURRWIDTH, CURRHEIGHT);
+
+	sw->setPerspectiveFov(55, 1, 10000);
+	Dx_Light::Initialize();
+	Dx_ShaderHolder::CreateShaderByteCode();
+
 	//dx->wireFrameTest(true);
-	//dx->NorTestOn();
-	dx->setGlobalAmbientLight(0.0000f, 0.0000f, 0.0000f);
+	//Dx_ShaderHolder::NorTestOn();
+	Dx_Light::setGlobalAmbientLight(0.0000f, 0.0000f, 0.0000f);
 	DxInput* di = DxInput::GetInstance();
 	di->create(hWnd);
 	di->SetWindowMode(true);
@@ -329,8 +337,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	sk->SetState(false, false);
 	//sk->ObjOffset(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0);
 	//sk->GetFbx("mesh/player2_fbx_att.fbx");
-	//HRESULT hr = sk->GetFbx("../../../Black Dragon NEW/Dragon_Baked_Actions_fbx_7.4_binary.fbx");
-	HRESULT hr = sk->GetFbx("../../../19496_open3dmodel/open3dmodel.com/Models_E0504A019/Crocodile.fbx");
+	HRESULT hr = sk->GetFbx("../../../Black Dragon NEW/Dragon_Baked_Actions_fbx_7.4_binary.fbx");
+	//HRESULT hr = sk->GetFbx("../../../19496_open3dmodel/open3dmodel.com/Models_E0504A019/Crocodile.fbx");
 	//HRESULT hr = sk->GetFbx("../../../Smaug/smaug.fbx");
 	//HRESULT hr = sk->GetFbx("../../../19496_open3dmodel/open3dmodel.com/Models_E0504A019/wani.fbx");
 	//HRESULT hr = sk->GetFbx("../../../sphere-bot-with-hydraulics FBX 7.4 binary/sphere-bot-with-hydraulics.fbx");
@@ -519,7 +527,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 		dxr->allSwapIndex();
 
-		dx->Cameraset({ cam1.x, cam1.y, cam1.z }, { 0, 0, 0 });
+		sw->Cameraset({ cam1.x, cam1.y, cam1.z }, { 0, 0, 0 });
 		//グラフィックスドライバ更新した後当たりからマルチスレッドでフリーズする現象有り？ → 大丈夫になった・・
 		//update();
 		//draw();
@@ -549,15 +557,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		}
 
 		cObj4->Bigin();
-		dx->BiginDraw(4, false);
+		sw->BiginDraw(4, false);
 		//p->Draw(4);
-		dx->EndDraw(4);
+		sw->EndDraw(4);
 		cObj4->End();
 		cMa->RunGpu();
 		cMa->WaitFence();
 
 		cObj4->Bigin();
-		dx->BiginDraw(4, false);
+		sw->BiginDraw(4, false);
 
 		if (loop > 0) {
 			if (eff[0])blur->ComputeDepthOfField(4, true, 500, 0.98f, 0.00f);
@@ -571,7 +579,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 
-		dx->EndDraw(4);
+		sw->EndDraw(4);
 		cObj4->End();
 		cMa->RunGpu();
 		cMa->WaitFence();
@@ -592,21 +600,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 			std::vector<Dx_Bloom::InstanceParam>pa = { pa1,pa2,pa3};
 
-			bl->Compute(4, pa, dx->GetRtBuffer());
+			bl->Compute(4, pa, sw->GetRtBuffer());
 		}
 
 		cObj4->Bigin();
-		dx->BiginDraw(4, false);
+		sw->BiginDraw(4, false);
 		
 		for (int i = 0; i < 14; i++)
 			ui->Draw(i, 4);
 		wi->Draw(0, 4);
 		text->Draw(4);
-		dx->EndDraw(4);
+		sw->EndDraw(4);
 		cObj4->End();
 		cMa->RunGpu();
 		cMa->WaitFence();
-		dx->DrawScreen();
+		sw->DrawScreen();
 		loop++;
 	}
 	th.end();
@@ -635,7 +643,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	DxInput::DeleteInstance();
 	Control::DeleteInstance();
 	DxText::DeleteInstance();
-	Dx12Process::DeleteInstance();
+	Dx_SwapChain::DeleteInstance();
+	Dx_TextureHolder::DeleteInstance();
 	Dx_CommandManager::DeleteInstance();
 	Dx_Device::DeleteInstance();
 	return 0;
@@ -653,8 +662,8 @@ void update() {
 	if (key == CANCEL)dlight = !dlight;//Delete
 	if (key == RIGHT)eff[3] = !eff[3];//ブラー
 
-	dx->SetDirectionLight(dlight);
-	dx->DirectionLight(0.4f, 0.4f, -1.0f, 0.1f, 0.1f, 0.1f);
+	Dx_Light::SetDirectionLight(dlight);
+	Dx_Light::DirectionLight(0.4f, 0.4f, -1.0f, 0.1f, 0.1f, 0.1f);
 	float th = tfloat.Add(0.05f);
 	theta = theta += th;
 	if (theta > 360)theta = 0;
@@ -666,16 +675,16 @@ void update() {
 	VectorMatrixMultiply(&light2, &thetaZ);
 	int lightCnt = 0;
 	static float light[4] = { 0.0f };
-	dx->PointLightPosSet(lightCnt++,
+	Dx_Light::PointLightPosSet(lightCnt++,
 		{ light1.x, light1.y, light1.z },
 		{ 1, 1, 1, 1 }, true, 1000, { 0.1f,light[0],0.000f });//{ 0.01f,0.001f,0.001f }
-	dx->PointLightPosSet(lightCnt++,
+	Dx_Light::PointLightPosSet(lightCnt++,
 		{ light2.x, light2.y, light2.z },
 		{ 1, 1, 1, 1 }, true, 1000, { 0.1f,light[1],0.000f });
-	dx->PointLightPosSet(lightCnt++,
+	Dx_Light::PointLightPosSet(lightCnt++,
 		{ 14, 0, 5 },
 		{ 1, 1, 1, 1 }, true, 1000, { 0.1f,light[2],0.000f });
-	dx->PointLightPosSet(lightCnt++,
+	Dx_Light::PointLightPosSet(lightCnt++,
 		{ -14, 0, 5 },
 		{ 1, 1, 1, 1 }, true, 1000, { 0.1f,light[3],0.000f });
 		
@@ -742,7 +751,13 @@ void update() {
 		{ 2, -5, 0 },
 		{ 0, 0, 0, 0 },
 		{ 90, 0, 0 },
-		{ 0.2f,0.2f,0.2f });
+		{ 0.2f,0.2f,0.2f });//19496_open3dmodel
+
+	sk->Update(0, m,
+		{ 15, -5, 0 },
+		{ 0, 0, 0, 0 },
+		{ 90, 0, 0 },
+		{ 0.005f,0.005f,0.005f });//Dragon
 
 	sk->setAllRefractiveIndex(0.1f);
 	
@@ -868,10 +883,11 @@ void draw() {
 	int com = 1;
 	
 	Dx_CommandListObj* d = Dx_CommandManager::GetInstance()->getGraphicsComListObj(com);
+	Dx_SwapChain* sw = Dx_SwapChain::GetInstance();
 
 	d->Bigin();
 	if (!rayF123) {
-		dx->BiginDraw(com);
+		sw->BiginDraw(com);
 		sk1->Draw(com);
 		pdbl[0].Draw(com);
 		pdbl[1].Draw(com);
@@ -885,7 +901,7 @@ void draw() {
 		pd[0].Draw(com);
 		pd[3].Draw(com);
 		bil->DrawBillboard(com);
-		dx->EndDraw(com);
+		sw->EndDraw(com);
 	}
 	if (rayF123) {
 		
