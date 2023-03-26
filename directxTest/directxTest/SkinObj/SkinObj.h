@@ -5,6 +5,7 @@
 
 #include "../../../../Common/Direct3DWrapper/Dx12Process.h"
 #include "../../../../Common/DirectInputWrapper/DxInput.h"
+#include "../../../../T_float/T_float.h"
 
 class SkinObj {
 

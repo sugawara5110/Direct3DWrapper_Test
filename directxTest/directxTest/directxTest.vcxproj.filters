@@ -88,6 +88,12 @@
     <Filter Include="SkinObj">
       <UniqueIdentifier>{660c10d8-4995-4829-9107-317758d907ec}</UniqueIdentifier>
     </Filter>
+    <Filter Include="T_float">
+      <UniqueIdentifier>{b3ee7ce5-df44-4502-8e2a-7ed657b00d62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test">
+      <UniqueIdentifier>{4050e0f3-82a0-4ff4-b43c-6fdb9f9b14d5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\FbxLoader\FbxLoader.cpp">
@@ -150,7 +156,7 @@
     <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\DxrRenderer.cpp">
       <Filter>Common\Direct3DWrapper\DX_3DCG\DXR</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx12ProcessCore.cpp">
+    <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_TextureHolder.cpp">
       <Filter>Common\Direct3DWrapper\DX_3DCG\Core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_PolygonData2D.cpp">
@@ -216,6 +222,18 @@
     <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_CommandManager.cpp">
       <Filter>Common\Direct3DWrapper\DX_3DCG\Core</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\T_float\T_float.cpp">
+      <Filter>T_float</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ParameterDXR.cpp">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_SwapChain.cpp">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_Light.cpp">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\FbxLoader\FbxLoader.h">
@@ -269,7 +287,7 @@
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_Device.h">
       <Filter>Common\Direct3DWrapper\DX_3DCG\Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx12ProcessCore.h">
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_TextureHolder.h">
       <Filter>Common\Direct3DWrapper\DX_3DCG\Core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\DxEnum.h">
@@ -427,6 +445,30 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR\ShaderTraceRay.h">
       <Filter>Common\Direct3DWrapper\DX_3DCG\DXR\ShaderDXR</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_Common.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_BasicPolygon.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_PolygonData2D.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\T_float\T_float.h">
+      <Filter>T_float</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\ParameterDXR.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_SwapChain.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Direct3DWrapper\DX_3DCG\Core\Dx_Light.h">
+      <Filter>Common\Direct3DWrapper\DX_3DCG\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="testCode.h">
+      <Filter>test</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

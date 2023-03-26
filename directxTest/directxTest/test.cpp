@@ -20,6 +20,7 @@
 #include <Process.h>
 #include"../../../Common/DirectStorageWrapper/DStorage.h"
 #include "SkinObj/SkinObj.h"
+#include "testCode.h"
 #define CURRWIDTH 1024
 #define CURRHEIGHT 768
 
@@ -177,58 +178,6 @@ void createTexture2(Dx_TextureHolder* dx) {
 	S_DELETE(sf);
 }
 
-static void sort(int* srcArr, int srcSize) {
-
-	//ソートする配列を分割
-	int topSize = (int)(srcSize * 0.5f);
-	int halfSize = srcSize - topSize;
-	int* topArr = new int[topSize];
-	int* halfArr = new int[halfSize];
-	memcpy(topArr, srcArr, topSize * sizeof(int));
-	memcpy(halfArr, &srcArr[topSize], halfSize * sizeof(int));
-
-	//要素1になるまで再帰
-	if (topSize > 1)sort(topArr, topSize);
-	if (halfSize > 1)sort(halfArr, halfSize);
-
-	int topIndex = 0;
-	int halfIndex = 0;
-	int srcIndex = 0;
-	//分割した配列の比較
-	//それぞれの配列は整列済みの為, 先頭から比較するだけ
-	for (int i = 0; i < srcSize; i++) {
-		if (topArr[topIndex] > halfArr[halfIndex]) {
-			srcArr[i] = topArr[topIndex++];
-			if (topSize <= topIndex) {
-				srcIndex = i + 1;
-				break;
-			}
-		}
-		else {
-			srcArr[i] = halfArr[halfIndex++];
-			if (halfSize <= halfIndex) {
-				srcIndex = i + 1;
-				break;
-			}
-		}
-	}
-
-	//余った要素を格納
-	if (topSize > topIndex) {
-		for (int i = srcIndex; i < srcSize; i++) {
-			srcArr[i] = topArr[topIndex++];
-		}
-	}
-	if (halfSize > halfIndex) {
-		for (int i = srcIndex; i < srcSize; i++) {
-			srcArr[i] = halfArr[halfIndex++];
-		}
-	}
-
-	delete[] topArr;
-	delete[] halfArr;
-}
-
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 
 	srand((unsigned)time(NULL));
@@ -248,9 +197,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Dx_Device* dev = Dx_Device::GetInstance();
 	dev->dxrCreateResource();
 	Dx_SwapChain* sw = Dx_SwapChain::GetInstance();
-	
+
 	Dx_CommandManager::setNumResourceBarrier(1024);
-	
+
 	sw->Initialize(hWnd, CURRWIDTH, CURRHEIGHT);
 
 	sw->setPerspectiveFov(55, 1, 10000);
@@ -346,11 +295,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	//HRESULT hr = sk->GetFbx("../../../Alien/Test_Alien-Animal-Blender_2.81.fbx");
 	//HRESULT hr = sk->GetFbx("../../../boss1bone.fbx");
 
-	sk->GetBuffer(1, 3200.0f, false);
+
+	float end_frame[3] = {
+		sk->getMaxEndframe(0,0),
+		sk->getMaxEndframe(0,1),
+		sk->getMaxEndframe(0,2)
+	};
+
+	sk->GetBuffer(1, 3,
+		end_frame,
+		false);
 	//sk->noUseMeshIndex(0);
 	sk->SetVertex(true, true);
 
-	pd[0].GetVBarray(CONTROL_POINT, 1);
+	pd[0].GetVBarray(SQUARE, 1);
 	pd[1].GetVBarray(SQUARE, 3);
 	pdbl[0].GetVBarray(SQUARE, 1);
 	pdbl[1].GetVBarray(SQUARE, 1);
@@ -358,7 +316,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	pd[3].GetVBarray(CONTROL_POINT, 1);
 
 	VECTOR3 v3[] = { {} };
-	VECTOR3 v3s[] = { {1,1,1}};
+	VECTOR3 v3s[] = { {1,1,1} };
 
 	Vertex* sv = (Vertex*)CreateGeometry::createSphere(10, 10, 1, v3, v3s, false);
 	unsigned int* svI = CreateGeometry::createSphereIndex(10, 10, 1);
@@ -367,7 +325,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Vertex* vRev = (Vertex*)CreateGeometry::createCube(1, v3, v3s, true);
 
 	unsigned int* ind = CreateGeometry::createCubeIndex(1);
-	pd[0].setVertex(v, 24 * 2, ind, 36);
+	pd[0].setVertex(v, 24, ind, 36);
 	pd[1].setVertex(sv, 11 * 11, svI, 10 * 10 * 6);
 	pdbl[0].setVertex(v, 24, ind, 36);
 	pdbl[1].setVertex(v, 24, ind, 36);
@@ -394,17 +352,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	Dx_CommandListObj* cObj = cMa->getGraphicsComListObj(0);
 
 	cObj->Bigin();
+
 	blur->ComCreateDepthOfField(0);
 	mosa->ComCreateMosaic(0);
 	mblur->ComCreateBlur(0);
 	UINT gaSize[5] = {
-				//512,256,128,64,32,16,8
-				256,128,64,32,16
+		//512,256,128,64,32,16,8
+		256,128,64,32,16
 	};
-	
-	p->CreateParticle(0,dx->GetTexNumber("leaf.png"), true, true);
+
+	p->CreateParticle(0, dx->GetTexNumber("leaf.png"), true, true);
 	bil->setMaterialType(EMISSIVE);
-	bil->CreateBillboard(0,true, true);
+	bil->CreateBillboard(0, true, true);
 	md->CreateMesh(0);
 	//sk1->setMaterialType(TRANSLUCENCE);
 	//sk1->setMaterialType(EMISSIVE,0,3);
@@ -414,17 +373,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	wav->SetCol(0.5f, 0.5f, 0.5f, 1, 1, 1);
 	wav->setMaterialType((MaterialType)(TRANSLUCENCE | METALLIC));
-	wav->Create(0,-1/*dx->GetTexNumber("maru.png")*//*dx->GetTexNumber("wave.jpg")*/, -1, true, true, 0.05f, 64.0f, true);
+	wav->Create(0, -1/*dx->GetTexNumber("maru.png")*//*dx->GetTexNumber("wave.jpg")*/, -1, true, true, 0.05f, 64.0f, true);
 
 	//gr->setMaterialType(METALLIC);
-	gr->Create(0,true, dx->GetTexNumber("ground3.jpg"),
+	gr->Create(0, true, dx->GetTexNumber("ground3.jpg"),
 		dx->GetTexNumber("ground3Nor.png"),
 		dx->GetTexNumber("ground3.jpg"), true, true, true);
 	//gr->getParameter()->updateF = true;
 
+	
 	pd[0].Create(0,true, dx->GetTexNumber("wall1.jpg"),
 		dx->GetTexNumber("wall1Nor.png"),
 		dx->GetTexNumber("wall1.jpg"), false, false, false);
+		
 	pd[1].setMaterialType(METALLIC);
 	pd[1].Create(0,true, dx->GetTexNumber("siro.png"), -1/*dx->GetTexNumber("ceiling5Nor.png")*/, -1, false, true);
 	pdbl[0].setMaterialType(EMISSIVE);
@@ -688,7 +649,7 @@ void update() {
 		{ -14, 0, 5 },
 		{ 1, 1, 1, 1 }, true, 1000, { 0.1f,light[3],0.000f });
 		
-	float th1 = tfloat.Add(0.05f);
+	float th1 = tfloat.Add(0.005f);
 
 	thetaO = thetaO += th1;
 	if (thetaO > 360)thetaO = 0;
@@ -698,8 +659,8 @@ void update() {
 		insCnt = 0;
 	}
 	
-	pd[0].Instancing({ (float)0, 0, 30 },
-		{ 0, 0, thetaO },
+	pd[0].Instancing({ (float)0, 0, 10 },
+		{ 0, 0, 0 },
 		{ 7, 7, 7 }, { 0, 0, 0, 0 });
 	pd[0].InstancingUpdate(
 		0.2f,
@@ -745,19 +706,20 @@ void update() {
 		4.0f);
 	pd[3].setRefractiveIndex(0.1f);
 
-	float m = tfloat.Add(1.0f);
-
+	float m = tfloat.Add(0.1f);
+	sk->setDirectTime(300.0f);
+	/*
 	sk->Update(0, m,
 		{ 2, -5, 0 },
 		{ 0, 0, 0, 0 },
 		{ 90, 0, 0 },
 		{ 0.2f,0.2f,0.2f });//19496_open3dmodel
-
+		*/
 	sk->Update(0, m,
 		{ 15, -5, 0 },
 		{ 0, 0, 0, 0 },
 		{ 90, 0, 0 },
-		{ 0.005f,0.005f,0.005f });//Dragon
+		{ 0.005f,0.005f,0.005f },2);//Dragon
 
 	sk->setAllRefractiveIndex(0.1f);
 	
@@ -825,6 +787,7 @@ void update() {
 		bil->DrawOff();
 	}
 
+	
 	static bool uiF = false;
 	if (!uiF) {
 		

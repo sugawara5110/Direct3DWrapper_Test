@@ -7,7 +7,7 @@ void SkinObj::create() {
 	sk->SetState(true, true);
 	//sk->GetFbx("mesh/p1/player1_all.fbx");//このモデルスペキュラが明るすぎ
 	sk->GetFbx("../../../texturePPM/player1_fbx_att.fbx");
-	float end[2] = { 4000,1000 };
+	float end[2] = { (float)sk->getMaxEndframe(0,0),100 };
 	sk->GetBuffer(1, 1, end);
 
 	//sk->GetFbxSub("mesh/p1/player1_Run.fbx", 1);
@@ -21,7 +21,7 @@ void SkinObj::create() {
 	//sk->GetBuffer_Sub(3, 3, end1);
 
 	sk->SetVertex(true, true);
-	sk->SetConnectStep(0, 10000);
+	sk->SetConnectStep(0, 1000);
 	//sk->SetConnectStep(1, 1000);
 	//sk->SetConnectStep(2, 10000);
 	//sk->SetConnectStep(3, 10000);
@@ -84,7 +84,7 @@ void SkinObj::update() {
 		internalIndex = 2;
 		break;
 	}
-	float m = tfloat.Add(1.0f);
+	float m = tfloat.Add(0.1f);
 	/*if (sk->Update(meshIndex, m, {0,0,-15}, {0,0,0,0}, {-90,0,theta}, {0.02f,0.02f,0.02f}, internalIndex) && meshIndex != 1) {
 		meshIndex = 0;
 	}*/
